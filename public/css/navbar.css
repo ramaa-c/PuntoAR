@@ -1,0 +1,78 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #000000;
+    color: white;
+    padding: 10px 20px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000; 
+}
+
+.navbar_center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+}
+
+.nombre-app {
+    font-size: 30px;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+
+.navbar_right .btn_carrito {
+    position: relative;
+    top: 0;
+    right: 0;
+    background: none;
+    color: thistle;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1300;
+    color: #c1ff72;
+    font-size: 18px;
+}
+
+.navbar_right .btn_carrito:hover {
+    color: #ffff;
+}
+
+.navbar_right .btn_login {
+    position: relative;
+    top: 0;
+    right: 0;
+    background: none;
+    color: thistle;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1300; 
+    color: #c1ff72;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+.navbar_right .btn_login:hover {
+    color: #ffff;
+}
+
+.logo {
+    width: 200px;
+    height: auto;
+    margin-top: 12px;
+}
+
+.banner {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}

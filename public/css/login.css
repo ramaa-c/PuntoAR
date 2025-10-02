@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f7f7f7;
+    font-family: 'Roboto', sans-serif;
+}
+
+.main_login { 
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    padding-top: 130px; 
+    padding-bottom: 30px; 
+    min-height: calc(100vh - 120px); 
+    width: 100%;
+}
+
+
+.login_container {
+    background-color: rgb(0, 0, 0);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login_titulo {
+    color: #ffffff;
+    margin-bottom: 30px;
+    font-size: 24px;
+    font-weight: 700;
+}
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+.label_login {
+    display: block;
+    margin-bottom: 8px;
+    color: #c4c4c4;
+    font-weight: 500;
+}
+.input_login {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #000000;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease, border-width 0.3s ease;
+    border-width: 3px;
+}
+.input_login:focus {
+    border-color: #c1ff72;
+    outline: none;
+}
+.login_container p {
+    color: #c4c4c4;
+}
+.login_container a {
+    color: #c1ff72;
+    text-decoration: none;
+    font-weight: 500;
+}
+.login_container a:hover {
+    text-decoration: underline;
+}
+.link_registro{
+    padding-top: 10px;;
+}
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #c1ff72;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.submit-btn:hover {
+    background-color: #69a519;
+}
+.error-message {
+    color: #e74c3c;
+    margin-top: 5px;
+    font-size: 14px;
+}
+.success-message {
+    color: #2ecc71;
+    margin-bottom: 20px;
+}
