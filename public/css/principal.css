@@ -1,6 +1,7 @@
 .contenedor_principal {
     display: flex;
     flex: 1;
+    padding-top: 80px;
 }
 
 .contenido_principal {

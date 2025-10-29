@@ -119,6 +119,7 @@ function iniciarCotizacion() {
 
     carrito.forEach((item, index) => {
         form.innerHTML += `
+            <input type="hidden" name="productos[${index}][imagen]" value="${item.imagen}">
             <input type="hidden" name="productos[${index}][id]" value="${item.id}">
             <input type="hidden" name="productos[${index}][nombre]" value="${item.nombre}">
             <input type="hidden" name="productos[${index}][cantidad]" value="${item.cantidad}">

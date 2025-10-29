@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-10-2025 a las 11:13:32
+-- Tiempo de generación: 29-10-2025 a las 08:45:54
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -77,6 +77,40 @@ CREATE TABLE `pedidodetalle` (
   `detalleImagen` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `pedidodetalle`
+--
+
+INSERT INTO `pedidodetalle` (`id_detalle`, `id_pedido`, `id_producto`, `cantidad`, `especificaciones`, `precio_unitario`, `detalleImagen`) VALUES
+(1, 1, 4, 1, '', 5000.00, NULL),
+(2, 1, 5, 1, '', 2200.00, NULL),
+(3, 1, 2, 1, '', 3500.00, NULL),
+(4, 2, 4, 1, '', 5000.00, NULL),
+(5, 2, 5, 1, '', 2200.00, NULL),
+(6, 2, 2, 1, '', 3500.00, NULL),
+(7, 3, 4, 2, '', 5000.00, NULL),
+(8, 3, 2, 1, '', 3500.00, NULL),
+(9, 4, 4, 3, '', 5000.00, NULL),
+(10, 4, 2, 3, '', 3500.00, NULL),
+(11, 4, 1, 2, '', 1500.00, NULL),
+(12, 4, 3, 1, '', 800.00, NULL),
+(13, 4, 5, 1, '', 2200.00, NULL),
+(14, 5, 4, 3, '', 5000.00, NULL),
+(15, 5, 2, 3, '', 3500.00, NULL),
+(16, 5, 1, 2, '', 1500.00, NULL),
+(17, 5, 3, 1, '', 800.00, NULL),
+(18, 5, 5, 1, '', 2200.00, NULL),
+(19, 6, 4, 3, 'coso', 5000.00, NULL),
+(20, 6, 2, 3, '223', 3500.00, NULL),
+(21, 6, 1, 2, '33', 1500.00, NULL),
+(22, 6, 3, 1, '444', 800.00, NULL),
+(23, 6, 5, 1, '5555', 2200.00, NULL),
+(24, 7, 4, 3, 'coso', 5000.00, 'uploads/pedidos/1759402341_64dba94e4832a74bd699.webp'),
+(25, 7, 2, 3, '222', 3500.00, NULL),
+(26, 7, 1, 2, '33', 1500.00, 'uploads/pedidos/1759402341_24664784f176109e969c.jpg'),
+(27, 7, 3, 1, '444', 800.00, NULL),
+(28, 7, 5, 1, '5555', 2200.00, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -94,6 +128,19 @@ CREATE TABLE `pedidos` (
   `telefono_cliente` varchar(50) DEFAULT NULL,
   `total` decimal(10,2) DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `pedidos`
+--
+
+INSERT INTO `pedidos` (`id_pedido`, `id_usuario`, `fecha`, `estado`, `requiere_contacto`, `nombre_cliente`, `email_cliente`, `telefono_cliente`, `total`) VALUES
+(1, 2, '2025-10-02 07:32:21', 'pendiente', 0, NULL, 'panchito777@gmail.com', NULL, 0.00),
+(2, 2, '2025-10-02 07:35:27', 'pendiente', 0, NULL, 'panchito777@gmail.com', NULL, 0.00),
+(3, 2, '2025-10-02 07:41:16', 'pendiente', 0, NULL, 'panchito777@gmail.com', NULL, 0.00),
+(4, 2, '2025-10-02 07:45:01', 'pendiente', 0, NULL, 'panchito777@gmail.com', NULL, 0.00),
+(5, 2, '2025-10-02 07:45:31', 'pendiente', 0, NULL, 'panchito777@gmail.com', NULL, 0.00),
+(6, 2, '2025-10-02 07:51:45', 'pendiente', 0, NULL, 'panchito777@gmail.com', NULL, 0.00),
+(7, 2, '2025-10-02 07:52:21', 'pendiente', 0, NULL, 'panchito777@gmail.com', NULL, 0.00);
 
 -- --------------------------------------------------------
 
@@ -220,13 +267,13 @@ ALTER TABLE `combos`
 -- AUTO_INCREMENT de la tabla `pedidodetalle`
 --
 ALTER TABLE `pedidodetalle`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT de la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`

@@ -1,3 +1,124 @@
-.pedido-container{
-    padding-top: 90px;
+.pedido-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.pedido-content-wrapper {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    padding-top: 40px;
+}
+
+.pedido-left-panel {
+    flex: 2;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.pedido-info-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.pedido-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
+
+.pedido-tabla th, .pedido-tabla td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95em;
+}
+
+.pedido-tabla th {
+    background-color: #f7f7f7;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+}
+
+.pedido-tabla td textarea, .pedido-tabla td input[type="file"] {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.pedido-footer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.pedido-total {
+    font-size: 1.5em;
+    color: #333;
+    margin: 0;
+}
+
+.main-action-btn {
+    background-color: #c1ff72;
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-transform: uppercase;
+}
+
+.main-action-btn:hover {
+    background-color: #000000;
+    color: #c1ff72;
+}
+
+.info-card {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+}
+
+.card-title {
+    font-size: 1.4em;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.card-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.card-list li {
+    margin-bottom: 10px;
+    line-height: 1.5;
+    position: relative;
+    padding-left: 20px;
+    color: #555;
+}
+
+@media (max-width: 900px) {
+    .pedido-content-wrapper {
+        flex-direction: column;
+    }
+    .pedido-left-panel, .pedido-info-panel {
+        flex: auto; 
+    }
 }
