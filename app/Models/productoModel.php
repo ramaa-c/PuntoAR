@@ -28,9 +28,9 @@ class productoModel extends Model
         'descripcion' => 'permit_empty|string',
         'precio'      => 'required|decimal',
         'stock'       => 'required|is_natural',
-        'id_categoria'=> 'permit_empty|integer',
-        'imagen'      => 'permit_empty|valid_url_strict',
-        'tipo'        => 'in_list[estandar,personalizable_simple,personalizable_complejo]',
+        'id_categoria' => 'permit_empty|integer',
+        'imagen'      => 'permit_empty|string',
+        'tipo'        => 'in_list[estandar,personalizable]',
         'activo'      => 'in_list[0,1]'
     ];
 
@@ -58,4 +58,11 @@ class productoModel extends Model
             'in_list' => 'El estado activo solo puede ser 0 o 1.'
         ]
     ];
+
+    public function getProductosConCategoria()
+    {
+        return $this->select('productos.*, categorias.nombre AS nombre_categoria')
+            ->join('categorias', 'categorias.id_categoria = productos.id_categoria')
+            ->findAll();
+    }
 }
