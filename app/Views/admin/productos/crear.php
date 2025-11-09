@@ -57,7 +57,7 @@
                                     <small class="text-danger"><?= session('errors.id_categoria') ?></small>
                                 <?php endif; ?>
                             </div>
-                            
+
                             <div class="form-group col-md-4">
                                 <label for="tipo">Tipo de Producto</label>
                                 <select class="form-control" id="tipo" name="tipo" required>
@@ -84,18 +84,23 @@
                 <div class="card card-info">
                     <div class="card-header">
                         <h3 class="card-title">Imágenes del Producto</h3>
+                        <small class="float-end text-white-50">Máximo 6 imágenes.</small>
                     </div>
                     <div class="card-body">
 
-                        <div class="form-group">
-                            <label for="imagenes">Seleccionar Imágenes</label>
-                            <div class="input-group">
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="imagenes" name="imagenes[]" multiple accept="image/*">
-                                    <label class="custom-file-label" for="imagenes">Elegir archivos...</label>
+                        <div class="form-group mb-4">
+                            <label for="imagen_principal">Imagen Principal</label>
+                            <input type="file" class="form-control" id="imagen_principal" name="imagen_principal" accept="image/*">
+                            <small class="form-text text-muted">Esta será la imagen de miniatura y listado.</small>
+                        </div>
+
+                        <div class="row">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <div class="form-group col-md-4">
+                                    <label for="imagen_secundaria_<?= $i ?>">Imagen Secundaria <?= $i ?> (Opcional)</label>
+                                    <input type="file" class="form-control" id="imagen_secundaria_<?= $i ?>" name="imagen_secundaria_<?= $i ?>" accept="image/*">
                                 </div>
-                            </div>
-                            <small class="form-text text-muted">Máximo 5 imágenes. Formatos: JPG, PNG.</small>
+                            <?php endfor; ?>
                         </div>
 
                     </div>
@@ -104,13 +109,9 @@
                     <button type="submit" class="btn btn-success btn-lg">
                         <i class="bi bi-save"></i> Guardar Producto
                     </button>
-                    <a href="<?= base_url('admin/productos') ?>" class="btn btn-secondary btn-lg ml-2">
-                        Cancelar
-                    </a>
                 </div>
 
                 <?= form_close() ?>
-
             </div>
         </div>
     </div>

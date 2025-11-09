@@ -34,7 +34,15 @@ $routes->group('admin', function($routes) {
     $routes->get('productos', 'Admin::productos'); // URL: /admin/productos
     // Ruta para mostrar el formulario (GET /admin/productos/crear)
     $routes->get('productos/crear', 'Admin::crearProducto'); 
+// Ruta para mostrar el formulario de edición (GET /admin/productos/editar/ID)
+    $routes->get('productos/editar/(:num)', 'Admin::editar/$1'); 
     
+    // Ruta para procesar el formulario de actualización (POST /admin/productos/actualizar/ID)
+    $routes->post('productos/actualizar/(:num)', 'Admin::actualizar/$1');    
+
+    // En app/Config/Routes.php (dentro del grupo 'admin')
+
+$routes->post('productos/eliminar-imagen/(:num)', 'Admin::eliminarImagenGaleria/$1');
     // Ruta para procesar el formulario (POST /admin/productos/crear_guardar)
     $routes->post('productos/crear_guardar', 'Admin::crear_guardar');
     
