@@ -134,9 +134,9 @@ class Admin extends BaseController
 	{
 		helper('form');
 
-		$productoModel = new \App\Models\ProductoModel();
-		$productoImagenModel = new \App\Models\ProductoImagenModel();
-		$categoriaModel = new \App\Models\CategoriaModel();
+		$productoModel = new ProductoModel();
+		$productoImagenModel = new ProductoImagenModel();
+		$categoriaModel = new CategoriaModel();
 
 		$producto = $productoModel->find($id_producto);
 
@@ -183,10 +183,10 @@ class Admin extends BaseController
 			'stock'            => 'required|integer|greater_than_equal_to[0]',
 			'id_categoria'     => 'required|integer',
 			'tipo'             => 'required|in_list[estandar,personalizable]',
-			'imagen_principal' => 'max_size[imagen_principal,2048]|ext_in[imagen_principal,jpg,jpeg,png]',
+			'imagen_principal' => 'if_exist|max_size[imagen_principal,2048]|ext_in[imagen_principal,jpg,jpeg,png]',
 		];
 		for ($i = 1; $i <= 5; $i++) {
-			$rules["imagen_secundaria_{$i}"] = 'max_size[imagen_secundaria_' . $i . ',2048]|ext_in[imagen_secundaria_' . $i . ',jpg,jpeg,png]';
+			$rules["imagen_secundaria_{$i}"] = 'if_exist|max_size[imagen_secundaria_' . $i . ',2048]|ext_in[imagen_secundaria_' . $i . ',jpg,jpeg,png]';
 		}
 
 		if (!$this->validate($rules)) {
@@ -200,7 +200,7 @@ class Admin extends BaseController
 
 		$rutaNuevaPrincipal = $productoActual['imagen'];
 		$filePrincipal = $this->request->getFile('imagen_principal');
-		$imagenesSecundariasNuevas = [];
+		$nuevasSecundarias = false;
 
 		if ($filePrincipal && $filePrincipal->isValid() && !$filePrincipal->hasMoved()) {
 
@@ -211,13 +211,10 @@ class Admin extends BaseController
 
 			if ($registroPrincipalAntiguo) {
 				$rutaAntiguaFisica = ROOTPATH . 'public/' . $registroPrincipalAntiguo['ruta_imagen'];
-				if (file_exists($rutaAntiguaFisica) && !is_dir($rutaAntiguaFisica)) {
-					if (file_exists($rutaAntiguaFisica)) {
-						unlink($rutaAntiguaFisica);
-					}
+				if (file_exists($rutaAntiguaFisica)) {
+					unlink($rutaAntiguaFisica);
 				}
-
-				$productoImagenModel->skipValidation(true)->delete($registroPrincipalAntiguo['id']);
+				$productoImagenModel->delete($registroPrincipalAntiguo['id']);
 			}
 
 			$nombreNuevo = $filePrincipal->getRandomName();
@@ -229,53 +226,70 @@ class Admin extends BaseController
 				'ruta_imagen' => $rutaNuevaPrincipal,
 				'orden'       => 1,
 			]);
+		}
 
-			$imagenesExistentes = $productoImagenModel
+		$imagenesSecundarias = $this->request->getFiles();
+
+		if (isset($imagenesSecundarias['imagen_secundaria']) && is_array($imagenesSecundarias['imagen_secundaria'])) {
+			foreach ($imagenesSecundarias['imagen_secundaria'] as $orden => $fileSecundario) {
+				if ($fileSecundario instanceof \CodeIgniter\HTTP\Files\UploadedFile && $fileSecundario->isValid() && !$fileSecundario->hasMoved()) {
+
+					$imgExistente = $productoImagenModel
+						->where('id_producto', $id_producto)
+						->where('orden', $orden)
+						->first();
+
+					if ($imgExistente) {
+						$rutaFisica = ROOTPATH . 'public/' . $imgExistente['ruta_imagen'];
+						if (file_exists($rutaFisica)) unlink($rutaFisica);
+						$productoImagenModel->delete($imgExistente['id']);
+					}
+
+					$nombreSecundario = $fileSecundario->getRandomName();
+					$fileSecundario->move($rutaUpload, $nombreSecundario);
+					$rutaSecundaria = 'uploads/productos/' . $nombreSecundario;
+
+					$productoImagenModel->insert([
+						'id_producto' => $id_producto,
+						'ruta_imagen' => $rutaSecundaria,
+						'orden'       => $orden,
+					]);
+				}
+			}
+		}
+
+		if ($nuevasSecundarias) {
+			$imagenesAntiguas = $productoImagenModel
 				->where('id_producto', $id_producto)
-				->orderBy('orden', 'asc')
+				->where('orden >', 1)
 				->findAll();
 
-			$ordenReinicio = 2;
-			$batchUpdate = [];
-			foreach ($imagenesExistentes as $img) {
-				$batchUpdate[] = [
-					'id'    => $img['id'],
-					'orden' => $ordenReinicio++,
-				];
+			foreach ($imagenesAntiguas as $img) {
+				$rutaFisica = ROOTPATH . 'public/' . $img['ruta_imagen'];
+				if (file_exists($rutaFisica)) {
+					unlink($rutaFisica);
+				}
+				$productoImagenModel->delete($img['id']);
 			}
 
-			if (!empty($batchUpdate)) {
-				$productoImagenModel->updateBatch($batchUpdate, 'id');
+			$orden = 2;
+			for ($i = 1; $i <= 5; $i++) {
+				$fileSecundario = $this->request->getFile("imagen_secundaria_{$i}");
+				if ($fileSecundario && $fileSecundario->isValid() && !$fileSecundario->hasMoved()) {
+					$nombreSecundario = $fileSecundario->getRandomName();
+					$fileSecundario->move($rutaUpload, $nombreSecundario);
+					$rutaSecundaria = 'uploads/productos/' . $nombreSecundario;
+					$imagenesSecundariasNuevas[] = [
+						'id_producto' => $id_producto,
+						'ruta_imagen' => $rutaSecundaria,
+						'orden'       => $orden++,
+					];
+				}
 			}
-		}
 
-		$ordenActual = $productoImagenModel
-			->where('id_producto', $id_producto)
-			->selectMax('orden')
-			->first()['orden'] ?? 0;
-
-		$orden = $ordenActual + 1;
-
-		$files = $this->request->getFiles();
-
-		for ($i = 1; $i <= 5; $i++) {
-			$fileSecundario = $this->request->getFile("imagen_secundaria_{$i}");
-
-			if ($fileSecundario && $fileSecundario->isValid() && !$fileSecundario->hasMoved()) {
-				$nombreSecundario = $fileSecundario->getRandomName();
-				$fileSecundario->move($rutaUpload, $nombreSecundario);
-				$rutaSecundaria = 'uploads/productos/' . $nombreSecundario;
-
-				$imagenesSecundariasNuevas[] = [
-					'id_producto' => $id_producto,
-					'ruta_imagen' => $rutaSecundaria,
-					'orden'       => $orden++,
-				];
+			if (!empty($imagenesSecundariasNuevas)) {
+				$productoImagenModel->insertBatch($imagenesSecundariasNuevas);
 			}
-		}
-
-		if (!empty($imagenesSecundariasNuevas)) {
-			$productoImagenModel->insertBatch($imagenesSecundariasNuevas);
 		}
 
 		$datosProducto = [
@@ -289,6 +303,13 @@ class Admin extends BaseController
 		];
 
 		$productoModel->update($id_producto, $datosProducto);
+
+		if ($this->request->isAJAX()) {
+			return $this->response->setJSON([
+				'success' => true,
+				'message' => 'Producto actualizado correctamente'
+			]);
+		}
 
 		return redirect()->to(base_url('admin/productos'))->with('success', 'Producto actualizado exitosamente.');
 	}
@@ -318,19 +339,64 @@ class Admin extends BaseController
 
 	public function eliminarProducto($id_producto = null)
 	{
-		if (!$id_producto) {
+		$method = strtolower($this->request->getMethod() ?? '');
+		$override = strtolower($this->request->getPost('_method') ?? '');
+
+		if ($method !== 'post' && $method !== 'delete' && $override !== 'delete') {
+			if ($this->request->isAJAX()) {
+				return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Método no permitido.']);
+			}
+			return redirect()->to(base_url('admin/productos'))->with('error', 'Método no permitido.');
+		}
+
+		if ($id_producto === null) {
+			if ($this->request->isAJAX()) {
+				return $this->response->setJSON(['success' => false, 'message' => 'ID de producto no especificado.']);
+			}
 			return redirect()->to(base_url('admin/productos'))->with('error', 'ID de producto no especificado.');
 		}
 
-		$productoModel = new  ProductoModel();
+		$productoModel = new ProductoModel();
+		$productoImagenModel = new ProductoImagenModel();
 
-		if (!$productoModel->find($id_producto)) {
+		$producto = $productoModel->find($id_producto);
+		if (!$producto) {
+			if ($this->request->isAJAX()) {
+				return $this->response->setJSON(['success' => false, 'message' => 'El producto no existe o ya fue eliminado.']);
+			}
 			return redirect()->to(base_url('admin/productos'))->with('error', 'El producto no existe o ya fue eliminado.');
 		}
 
-		$productoModel->delete($id_producto);
+		try {
+			$imagenes = $productoImagenModel->where('id_producto', $id_producto)->findAll();
+			foreach ($imagenes as $img) {
+				$rutaCompleta = ROOTPATH . 'public/' . $img['ruta_imagen'];
+				if (file_exists($rutaCompleta) && is_file($rutaCompleta)) {
+					@unlink($rutaCompleta);
+				}
+				$productoImagenModel->delete($img['id']);
+			}
 
-		return redirect()->to(base_url('admin/productos'))->with('success', 'Producto eliminado exitosamente.');
+			if (!empty($producto['imagen'])) {
+				$rutaPrincipal = ROOTPATH . 'public/' . $producto['imagen'];
+				if (file_exists($rutaPrincipal) && is_file($rutaPrincipal)) {
+					@unlink($rutaPrincipal);
+				}
+			}
+
+			$productoModel->delete($id_producto);
+
+			if ($this->request->isAJAX()) {
+				return $this->response->setJSON(['success' => true, 'message' => 'Producto eliminado correctamente.']);
+			}
+
+			return redirect()->to(base_url('admin/productos'))->with('success', 'Producto eliminado correctamente.');
+		} catch (\Exception $e) {
+			if ($this->request->isAJAX()) {
+				return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Error al eliminar: ' . $e->getMessage()]);
+			}
+			return redirect()->to(base_url('admin/productos'))->with('error', 'Error al eliminar el producto.');
+		}
 	}
 
 	public function categorias()
@@ -361,12 +427,99 @@ class Admin extends BaseController
 		$datosCategoria = [
 			'nombre' => $this->request->getPost('nombre'),
 			'descripcion' => $this->request->getPost('descripcion'),
-			'tipo' => 'general'
 		];
 
 		$categoriaModel->insert($datosCategoria);
 
 		return redirect()->to(base_url('admin/categorias'))->with('success', 'Categoría creada exitosamente.');
+	}
+
+	public function editarCategoria($id_categoria)
+	{
+		$categoriaModel = new categoriaModel();
+
+		$data = [
+			'nombre' => $this->request->getPost('nombre'),
+			'descripcion' => $this->request->getPost('descripcion')
+		];
+
+		$rules = [
+			'nombre' => "required|min_length[3]|max_length[100]|is_unique[categorias.nombre,id_categoria,{$id_categoria}]",
+			'descripcion' => 'permit_empty|string|max_length[255]'
+		];
+
+		if (! $this->validate($rules)) {
+			return $this->response->setJSON([
+				'success' => false,
+				'message' => 'Error de validación',
+				'errors' => $this->validator->getErrors()
+			]);
+		}
+
+		if ($categoriaModel->update($id_categoria, $data)) {
+			return $this->response->setJSON([
+				'success' => true,
+				'message' => 'Categoría actualizada correctamente'
+			]);
+		} else {
+			return $this->response->setJSON([
+				'success' => false,
+				'message' => 'No se pudo actualizar la categoría.'
+			]);
+		}
+	}
+
+	public function eliminarCategoria($id_categoria = null)
+	{
+		$method = strtolower($this->request->getMethod() ?? '');
+		$override = strtolower($this->request->getPost('_method') ?? '');
+
+		if ($method !== 'post' && $method !== 'delete' && $override !== 'delete') {
+			if ($this->request->isAJAX()) {
+				return $this->response->setStatusCode(405)->setJSON([
+					'success' => false,
+					'message' => 'Método no permitido.'
+				]);
+			}
+			return redirect()->to(base_url('admin/categorias'))->with('error', 'Método no permitido.');
+		}
+
+		if ($id_categoria === null) {
+			return $this->response->setStatusCode(400)->setJSON([
+				'success' => false,
+				'message' => 'ID de categoría no especificado.'
+			]);
+		}
+
+		$categoriaModel = new CategoriaModel();
+		$productoModel = new ProductoModel();
+
+		$categoria = $categoriaModel->find($id_categoria);
+		if (!$categoria) {
+			return $this->response->setStatusCode(404)->setJSON([
+				'success' => false,
+				'message' => 'Categoría no encontrada.'
+			]);
+		}
+
+		$productos = $productoModel->where('id_categoria', $id_categoria)->countAllResults();
+		if ($productos > 0) {
+			return $this->response->setStatusCode(400)->setJSON([
+				'success' => false,
+				'message' => '⚠️ No se puede eliminar la categoría porque tiene productos asociados.'
+			]);
+		}
+
+		$categoriaModel->delete($id_categoria);
+
+		if ($this->request->isAJAX()) {
+			return $this->response->setJSON([
+				'success' => true,
+				'message' => '✅ Categoría eliminada correctamente.'
+			]);
+		}
+
+		return redirect()->to(base_url('admin/categorias'))->with('success', '✅ Categoría eliminada correctamente.');
 	}
 
 	public function carrusel()

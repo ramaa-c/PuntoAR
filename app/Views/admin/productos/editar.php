@@ -101,16 +101,22 @@
                         <div class="form-group mb-4">
                             <label for="imagen_principal">Imagen Principal (Reemplazar)</label>
                             <input type="file" class="form-control" id="imagen_principal" name="imagen_principal" accept="image/*">
-                            <small class="form-text text-muted">Subir una nueva reemplazará la imagen principal actual.</small>
+                            <small class="form-text text-muted">Subir una nueva reemplazará la imagen principal actual (oreden 1).</small>
                         </div>
 
                         <div class="row">
-                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                            <?php
+                            $ordenesExistentes = array_column($imagenes, 'orden');
+                            $maxOrden = !empty($ordenesExistentes) ? max($ordenesExistentes) : 1;
+                            for ($orden = 2; $orden <= max(6, $maxOrden); $orden++):
+                            ?>
                                 <div class="form-group col-md-4">
-                                    <label for="imagen_secundaria_<?= $i ?>">Imagen Secundaria <?= $i ?> (Añadir/Reemplazar)</label>
-                                    <input type="file" class="form-control" id="imagen_secundaria_<?= $i ?>" name="imagen_secundaria_<?= $i ?>" accept="image/*">
+                                    <label for="imagen_secundaria_<?= $orden ?>">Imagen Secundaria <?= $orden - 1 ?> (Añadir/Reemplazar)</label>
+                                    <input type="file" class="form-control" id="imagen_secundaria_<?= $orden ?>" name="imagen_secundaria[<?= $orden ?>]" accept="image/*">
+                                    <small class="form-text text-muted">Esta reemplaza la imagen con orden <?= $orden ?> o la crea.</small>
                                 </div>
                             <?php endfor; ?>
+
                         </div>
                     </div>
                 </div>
@@ -124,39 +130,101 @@
                 <?= form_close() ?>
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                        document.querySelectorAll('.btn-eliminar-imagen').forEach(button => {
-                            button.addEventListener('click', function(e) {
-                                e.preventDefault();
+                        const form = document.getElementById('form-editar-producto');
+                        const btnSubmit = form.querySelector('button[type="submit"]');
 
-                                const idImagen = this.getAttribute('data-id');
-                                const row = this.closest('.col-md-2');
+                        const msgBox = document.createElement('div');
+                        msgBox.style.position = 'fixed';
+                        msgBox.style.top = '20px';
+                        msgBox.style.right = '20px';
+                        msgBox.style.zIndex = '2000';
+                        document.body.appendChild(msgBox);
 
-                                if (confirm('¿Está seguro de eliminar esta imagen de la galería?')) {
-                                    fetch('<?= base_url('admin/productos/eliminar-imagen/') ?>' + idImagen, {
-                                            method: 'POST',
-                                            headers: {
-                                                'X-Requested-With': 'XMLHttpRequest',
-                                                '<?= csrf_header() ?>': '<?= csrf_hash() ?>'
-                                            }
-                                        })
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (data.success) {
-                                                row.style.display = 'none';
-                                                alert('Imagen eliminada.');
-                                            } else {
-                                                alert('Error al eliminar: ' + data.message);
-                                            }
-                                        })
-                                        .catch(error => {
-                                            console.error('Error:', error);
-                                            alert('Ocurrió un error en la solicitud.');
-                                        });
+                        form.addEventListener('submit', async function(e) {
+                            e.preventDefault();
+
+                            const formData = new FormData(form);
+
+                            btnSubmit.disabled = true;
+                            btnSubmit.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Guardando...';
+
+                            try {
+                                const response = await fetch(form.action, {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    }
+                                });
+
+                                const result = await response.json();
+
+                                if (response.ok && result.success) {
+                                    showMessage('✅ Producto actualizado correctamente', 'success');
+                                    setTimeout(() => window.location.reload(), 1500);
+                                } else {
+                                    showMessage('⚠️ Ocurrió un error al actualizar', 'error');
+                                    console.error(result);
                                 }
-                            });
+
+                            } catch (err) {
+                                console.error(err);
+                                showMessage('❌ Error en la solicitud', 'error');
+                            } finally {
+                                btnSubmit.disabled = false;
+                                btnSubmit.innerHTML = '<i class="bi bi-arrow-up-circle"></i> Actualizar Producto';
+                            }
                         });
+
+                        function showMessage(text, type = 'info') {
+                            const div = document.createElement('div');
+                            div.textContent = text;
+                            div.className = `fade-message ${type}`;
+                            msgBox.appendChild(div);
+
+                            setTimeout(() => {
+                                div.style.opacity = '0';
+                                setTimeout(() => div.remove(), 500);
+                            }, 2000);
+                        }
                     });
                 </script>
+
+                <style>
+                    .fade-message {
+                        background: #2d3436;
+                        color: white;
+                        padding: 10px 16px;
+                        margin-top: 8px;
+                        border-radius: 8px;
+                        font-weight: 500;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                        transition: opacity 0.5s ease;
+                    }
+
+                    .fade-message.success {
+                        background: #27ae60;
+                    }
+
+                    .fade-message.error {
+                        background: #c0392b;
+                    }
+
+                    .spin {
+                        animation: spin 1s linear infinite;
+                    }
+
+                    @keyframes spin {
+                        from {
+                            transform: rotate(0deg);
+                        }
+
+                        to {
+                            transform: rotate(360deg);
+                        }
+                    }
+                </style>
+
             </div>
         </div>
     </div>

@@ -40,7 +40,6 @@
                                     <th>Categoría</th>
                                     <th>Precio</th>
                                     <th>Stock</th>
-                                    <th style="width: 10%">Estado</th>
                                     <th style="width: 15%">Acciones</th>
                                 </tr>
                             </thead>
@@ -72,24 +71,18 @@
 
                                             <td>$<?= number_format($producto['precio'], 2) ?></td>
                                             <td><?= $producto['stock'] ?></td>
-                                            <td>
-                                                <span class="badge text-bg-<?= ($producto['activo'] == 1 ? 'success' : 'danger') ?>">
-                                                    <?= $producto['activo'] == 1 ? 'Activo' : 'Inactivo' ?>
-                                                </span>
-                                            </td>
 
                                             <td>
                                                 <a href="<?= base_url('admin/productos/editar/' . $producto['id_producto']) ?>" class="btn btn-warning btn-sm" title="Editar"><i class="bi bi-pencil"></i></a>
 
                                                 <button type="button"
-                                                    class="btn btn-danger btn-sm"
+                                                    class="btn btn-danger btn-sm btn-eliminar-producto"
                                                     title="Eliminar"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#modalEliminar"
                                                     data-id="<?= $producto['id_producto'] ?>"
-                                                    data-nombre="<?= $producto['nombre'] ?>">
+                                                    data-nombre="<?= esc($producto['nombre']) ?>">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
+
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -103,42 +96,52 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalEliminarLabel">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                ¿Está seguro de que desea eliminar permanentemente el producto **<span id="nombreProductoEliminar"></span>**? Esta acción no se puede deshacer.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-
-                <form id="formEliminar" method="POST" action="">
-                    <?= csrf_field() ?>
-                    <input type="hidden" name="_method" value="DELETE" /> <button type="submit" class="btn btn-danger">Sí, Eliminar</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const modalEliminar = document.getElementById('modalEliminar');
-        modalEliminar.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
+        const botones = document.querySelectorAll('.btn-eliminar-producto');
 
-            const idProducto = button.getAttribute('data-id');
-            const nombreProducto = button.getAttribute('data-nombre');
+        botones.forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                const boton = this;
+                const id = boton.dataset.id;
+                const nombre = boton.dataset.nombre || 'producto';
 
-            const nombreSpan = modalEliminar.querySelector('#nombreProductoEliminar');
-            nombreSpan.textContent = nombreProducto;
+                if (!confirm(`¿Seguro que deseas eliminar "${nombre}"? Esta acción no se puede deshacer.`)) {
+                    return;
+                }
 
-            const form = modalEliminar.querySelector('#formEliminar');
-            form.action = '<?= base_url('admin/productos/eliminar/') ?>' + idProducto;
+                try {
+                    const url = '<?= base_url('admin/productos/eliminar/') ?>' + id;
+
+                    const body = new URLSearchParams();
+                    body.append('_method', 'DELETE');
+                    body.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                        },
+                        body: body.toString()
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+                        const fila = boton.closest('tr');
+                        if (fila) fila.remove();
+                        alert('✅ Producto eliminado correctamente.');
+                    } else {
+                        alert('⚠️ No se pudo eliminar el producto. ' + (data.message || ''));
+                        console.error(data);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('❌ Error en la solicitud. Revisa la consola/Network.');
+                }
+            });
         });
     });
 </script>
