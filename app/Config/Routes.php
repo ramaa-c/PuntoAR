@@ -6,7 +6,7 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
-$routes->get('/', 'ProductoController::index');
+$routes->get('/', 'Home::index');
 $routes->get('/pantalla_inicio', 'ProductoController::index');
 
 $routes->get('/contacto', 'Home::contacto');
@@ -45,11 +45,15 @@ $routes->group('admin', function ($routes) {
     $routes->post('categorias/eliminar/(:num)', 'Admin::eliminarCategoria/$1');
     $routes->delete('categorias/eliminar/(:num)', 'Admin::eliminarCategoria/$1');
 
+    $routes->get('carrusel/productos', 'Admin::carruselesProductos');
+    $routes->post('carrusel/guardar_productos', 'Admin::guardarCarruselProducto');
+    $routes->post('carrusel/eliminar_productos/(:num)', 'Admin::eliminarCarruselProducto/$1');
+    $routes->post('carrusel/actualizar_productos/(:num)', 'Admin::actualizarCarruselProducto/$1');
 
     $routes->get('carrusel', 'Admin::carrusel');
     $routes->post('carrusel/subir', 'Admin::subirCarrusel');
     $routes->post('carrusel/ordenar', 'Admin::ordenarCarrusel');
-    $routes->get('carrusel/eliminar/(:num)', 'Admin::eliminarCarrusel/$1');
+    $routes->post('carrusel/eliminar/(:num)', 'Admin::eliminarCarruselProd/$1');
 
     $routes->get('ordenes', 'Admin::ordenes');
 });

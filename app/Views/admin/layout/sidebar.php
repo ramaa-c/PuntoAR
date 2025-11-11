@@ -52,10 +52,19 @@
                     </ul>
                 </li>
 
+                <li class="nav-header">GESTIÓN DE CARRUSELES</li>
+
                 <li class="nav-item">
                     <a href="<?= base_url('admin/carrusel') ?>" class="nav-link">
                         <i class="nav-icon bi bi-images"></i>
                         <p>Carrusel Principal</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="<?= base_url('admin/carrusel/productos') ?>" class="nav-link">
+                        <i class="nav-icon bi bi-images"></i>
+                        <p>Carrusel Productos</p>
                     </a>
                 </li>
 

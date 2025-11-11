@@ -1,25 +1,68 @@
-/* ===== COMPONENTE FOOTER ===== */
+
 footer {
-    background-color: #000000;
+    padding: 30px 5%;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: black;
     color: #ccc;
-    text-align: center;
-    padding: 15px 0;
-    margin-top: auto;
 }
 
-/* ===== ENLACES FOOTER ===== */
-.enlaces-footer {
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
-}
-
-.enlaces-footer a {
-    margin-right: 15px;
-    color: #3498db;
-    text-decoration: none;
-}
-
-.enlaces-footer a:hover {
+footer a {
+    color: #c1ff72;
     text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.footer-grid-principal {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 60px 0;
+    border-top: 1px solid #333;
+}
+
+.footer-col {
+    flex: 1;
+    min-width: 150px;
+    padding: 0 15px;
+    padding-left: 40px;
+}
+
+
+
+.footer-col h4 {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.footer-redes .fa-brands {
+    font-weight: 40;
+    font-size: 20px;
+}
+
+.footer-redes a {
+    margin-left: 10px;
+}
+
+.footer-redes .red {
+    margin-bottom: 10px;
+}
+
+.footer-lista {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-lista li {
+    margin-bottom: 5px;
+    font-size: 0.95em;
+    color: #ccc;
+}
+
+.footer-pie {
+    text-align: center;
+    padding-top: 15px;
+    border-top: 1px solid #333;
+    margin-top: 20px;
 }

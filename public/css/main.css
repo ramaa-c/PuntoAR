@@ -18,6 +18,9 @@ body {
     min-height: 100vh;
     margin: 0;
 }
+main {
+    flex-grow: 1;
+}
 .header-link {
     text-decoration: none;
     color: inherit;

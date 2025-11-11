@@ -8,7 +8,7 @@
 
     <div class="product-container">
         <div class="product-image-section">
-            <img src="<?= esc($producto['imagen']) ?>" alt="<?= esc($producto['nombre']) ?>" class="main-product-image">
+            <img src="<?= base_url('public/' . $producto['imagen']) ?>" alt="<?= esc($producto['nombre']) ?>" class="main-product-image">
             <p class="description-title">Descripción</p>
             <p class="product-description">
                 <?= esc($producto['descripcion']) ?>

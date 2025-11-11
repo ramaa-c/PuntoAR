@@ -57,14 +57,18 @@
 .next {
     right: 20px;
 }
+
 /* ===== PRODUCTOS ===== */
 .product-carousel-visible {
+    position: relative;
+    /* 🔹 esto permite que los botones se posicionen relativos a este contenedor */
     width: 100%;
     max-width: 1400px;
     margin: 40px auto;
     background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 40px 60px;
+    /* 🔹 agregamos espacio lateral para las flechas */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 }
 
@@ -86,20 +90,18 @@
 .carousel-track-visible {
     display: flex;
     -webkit-overflow-scrolling: touch;
-    padding: 0 10px; 
+    padding: 0 10px;
     flex-grow: 1;
     width: auto;
     transition: transform 0.5s ease;
 }
 
 .product-item-visible {
-    flex: 0 0 calc(100% / 6 - 20px);
-    min-width: calc(100% / 6 - 20px);
-    max-width: calc(100% / 6 - 20px);
+    flex: 0 0 calc(100% / 6);
+    min-width: calc(100% / 6);
+    max-width: calc(100% / 6);
     box-sizing: border-box;
-    padding: 10px;
     text-align: center;
-    margin: 0 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -124,6 +126,8 @@
     height: 100%;
     object-fit: cover;
     border-radius: 8px;
+    padding-left: 10px;
+    background: white
 }
 
 .product-name {
@@ -152,9 +156,11 @@
     font-size: 1em;
     transition: text-decoration 0.2s;
 }
+
 .product-name a:hover {
     text-decoration: none;
 }
+
 .product-link {
     display: block;
     width: 100%;
@@ -172,6 +178,7 @@
     text-decoration: underline;
     color: #333;
 }
+
 .buy-button {
     background-color: #333;
     color: white;
@@ -190,31 +197,30 @@
 }
 
 .carousel-arrow {
-    color: black;
-    border: none;
-    padding: 15px 10px;
-    cursor: pointer;
-    z-index: 10;
-    font-size: 2em;
-    border-radius: 5px;
     position: absolute;
     top: 50%;
+    /* 🔹 centra verticalmente */
     transform: translateY(-50%);
-    background-color: transparent;
+    font-size: 2.2rem;
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    z-index: 5;
+    transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .left-arrow {
-    left: -10px;
-    position: absolute;
+    left: -50px;
 }
 
 .right-arrow {
-    right: -10px;
-    position: absolute;
+    right: -50px;
 }
 
 .carousel-arrow:hover {
-    color: #555;
+    color: #000;
+    transform: translateY(-50%) scale(1.1);
 }
 
 .carousel-dots {

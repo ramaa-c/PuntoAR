@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\ProductoModel;
 use App\Models\ProductoImagenModel;
 use App\Models\CategoriaModel;
+use App\Models\carruselProductoModel;
 
 class Admin extends BaseController
 {
@@ -520,6 +521,80 @@ class Admin extends BaseController
 		}
 
 		return redirect()->to(base_url('admin/categorias'))->with('success', '✅ Categoría eliminada correctamente.');
+	}
+
+	public function carruselesProductos()
+	{
+		helper('form');
+		$carruselModel = new CarruselProductoModel();
+		$categoriaModel = new CategoriaModel();
+
+		$categorias = $categoriaModel->findAll();
+
+		$configuraciones = $carruselModel
+			->select('carrusel_productos.*, categorias.nombre AS nombre_categoria')
+			->join('categorias', 'categorias.id_categoria = carrusel_productos.id_categoria', 'left')
+			->orderBy('orden', 'asc')
+			->findAll();
+
+		$maxOrden = $carruselModel->selectMax('orden')->first()['orden'] ?? 0;
+
+		$data = [
+			'title'           => 'Gestión de Carruseles de Productos',
+			'configuraciones' => $configuraciones,
+			'categorias'      => $categorias,
+			'siguiente_orden' => $maxOrden + 1,
+		];
+
+		return $this->loadAdminView('admin/carrusel/productos_index', $data);
+	}
+
+	public function guardarCarruselProducto()
+	{
+		if (!$this->request->is('post')) {
+			return redirect()->to(base_url('admin/carrusel/productos'));
+		}
+
+		$carruselModel = new CarruselProductoModel();
+
+		$rules = [
+			'titulo'       => 'required|max_length[100]',
+			'id_categoria' => 'required|integer',
+			'tipo'         => 'permit_empty|in_list[estandar,personalizable]',
+			'orden'        => 'required|integer|greater_than_equal_to[1]',
+			'limite'       => 'required|integer|greater_than_equal_to[1]',
+		];
+
+		if (!$this->validate($rules)) {
+			return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+		}
+
+		$data = [
+			'titulo'       => $this->request->getPost('titulo'),
+			'id_categoria' => $this->request->getPost('id_categoria'),
+			'tipo'         => $this->request->getPost('tipo') ?? null,
+			'orden'        => $this->request->getPost('orden'),
+			'limite'       => $this->request->getPost('limite'),
+		];
+
+		$carruselModel->insert($data);
+
+		return redirect()->to(base_url('admin/carrusel/productos'))->with('success', '✅ Carrusel configurado correctamente.');
+	}
+
+	public function eliminarCarruselProd($id = null)
+	{
+		if ($id === null) {
+			return $this->response->setJSON(['success' => false, 'message' => 'ID de carrusel no especificado.']);
+		}
+
+		$carruselModel = new CarruselProductoModel();
+
+		if ($carruselModel->delete($id)) {
+			return $this->response->setJSON(['success' => true, 'message' => 'Carrusel eliminado.']);
+		} else {
+			return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'No se pudo eliminar el carrusel (posible error de clave foránea).']);
+		}
 	}
 
 	public function carrusel()
