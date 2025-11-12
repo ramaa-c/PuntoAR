@@ -20,7 +20,9 @@ $routes->match(['get', 'post'], '/editarPerfil', 'Auth::editarUsuario', ['filter
 $routes->get('/perfil', 'Auth::perfil', ['filter' => 'auth']);
 
 $routes->get('/producto/(:num)', 'ProductoController::ver/$1');
-$routes->get('productos', 'ProductoController::index');
+$routes->get('/productos', 'ProductoController::index');
+$routes->post('/productos/filtrar', 'ProductoController::filtrar');
+
 
 $routes->match(['get', 'post'], '/pedidos/crear', 'PedidosController::crear', ['filter' => 'auth']);
 $routes->get('/pedidos', 'PedidosController::index', ['filter' => 'auth']);
@@ -47,13 +49,13 @@ $routes->group('admin', function ($routes) {
 
     $routes->get('carrusel/productos', 'Admin::carruselesProductos');
     $routes->post('carrusel/guardar_productos', 'Admin::guardarCarruselProducto');
-    $routes->post('carrusel/eliminar_productos/(:num)', 'Admin::eliminarCarruselProducto/$1');
-    $routes->post('carrusel/actualizar_productos/(:num)', 'Admin::actualizarCarruselProducto/$1');
+    $routes->post('carrusel/eliminar_productos/(:num)', 'Admin::eliminarCarruselProductos/$1');
+    $routes->delete('carrusel/eliminar_productos/(:num)', 'Admin::eliminarCarruselProductos/$1');
 
     $routes->get('carrusel', 'Admin::carrusel');
     $routes->post('carrusel/subir', 'Admin::subirCarrusel');
-    $routes->post('carrusel/ordenar', 'Admin::ordenarCarrusel');
-    $routes->post('carrusel/eliminar/(:num)', 'Admin::eliminarCarruselProd/$1');
+    $routes->post('carrusel/eliminar_banner/(:num)', 'Admin::eliminarCarrusel/$1');
+    $routes->delete('carrusel/eliminar_banner/(:num)', 'Admin::eliminarCarrusel/$1');
 
     $routes->get('ordenes', 'Admin::ordenes');
 });

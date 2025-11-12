@@ -7,6 +7,7 @@ use App\Models\ProductoModel;
 use App\Models\ProductoImagenModel;
 use App\Models\CategoriaModel;
 use App\Models\carruselProductoModel;
+use App\Models\BannerModel;
 
 class Admin extends BaseController
 {
@@ -582,7 +583,7 @@ class Admin extends BaseController
 		return redirect()->to(base_url('admin/carrusel/productos'))->with('success', '✅ Carrusel configurado correctamente.');
 	}
 
-	public function eliminarCarruselProd($id = null)
+	public function eliminarCarruselProductos($id = null)
 	{
 		if ($id === null) {
 			return $this->response->setJSON(['success' => false, 'message' => 'ID de carrusel no especificado.']);
@@ -600,18 +601,10 @@ class Admin extends BaseController
 	public function carrusel()
 	{
 		helper('form');
+		$bannerModel = new BannerModel();
 
-		// Lógica para obtener las imágenes activas del carrusel, ordenadas por el campo 'orden'
-		// $carruselModel = new  CarruselModel();
-		// $data['imagenes'] = $carruselModel->orderBy('orden', 'asc')->findAll();
-
-		$data['imagenes'] = (object)[
-			(object)['id' => 3, 'nombre_archivo' => 'img_03.jpg', 'orden' => 1],
-			(object)['id' => 1, 'nombre_archivo' => 'img_01.jpg', 'orden' => 2],
-			(object)['id' => 2, 'nombre_archivo' => 'img_02.jpg', 'orden' => 3],
-		];
-
-		$data['title'] = 'Gestión de Carrusel Principal';
+		$data['imagenes'] = $bannerModel->orderBy('orden', 'asc')->findAll();
+		$data['title'] = 'Gestión de Carrusel Banners';
 
 		return $this->loadAdminView('admin/carrusel/index', $data);
 	}
@@ -621,42 +614,83 @@ class Admin extends BaseController
 		if (!$this->request->is('post')) {
 			return redirect()->to(base_url('admin/carrusel'));
 		}
-
 		helper(['form', 'filesystem']);
+		$bannerModel = new BannerModel();
 
 		$rules = [
-			'imagen_carrusel' => 'uploaded[imagen_carrusel]|max_size[imagen_carrusel,2048]|ext_in[imagen_carrusel,jpg,jpeg,png]',
+			'imagen_banner' => 'uploaded[imagen_banner]|max_size[imagen_banner,3072]|ext_in[imagen_banner,jpg,jpeg,png]',
 		];
 
 		if (!$this->validate($rules)) {
-			return redirect()->back()->withInput()->with('error', $this->validator->getError('imagen_carrusel'));
+			return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
 		}
 
-		$file = $this->request->getFile('imagen_carrusel');
-		$rutaUpload = WRITEPATH . 'uploads/carrusel/';
+		$file = $this->request->getFile('imagen_banner');
+		$rutaUpload = ROOTPATH . 'public/uploads/banners/';
+
+		if (!is_dir($rutaUpload)) {
+			mkdir($rutaUpload, 0777, true);
+		}
 
 		if ($file->isValid() && !$file->hasMoved()) {
 			$nuevoNombre = $file->getRandomName();
 			$file->move($rutaUpload, $nuevoNombre);
+			$rutaDB = 'uploads/banners/' . $nuevoNombre;
 
-			// 3. Guardar en la DB (Obtener el siguiente valor de 'orden')
-			// $carruselModel = new  CarruselModel();
-			// $carruselModel->insert([
-			//     'nombre_archivo' => $nuevoNombre,
-			//     'orden' => $carruselModel->getSiguienteOrden(), // Necesitas esta lógica en el modelo
-			// ]);
+			$maxOrden = $bannerModel->selectMax('orden')->first()['orden'] ?? 0;
 
-			return redirect()->to(base_url('admin/carrusel'))->with('success', 'Imagen subida exitosamente.');
+			$bannerModel->insert([
+				'ruta_imagen' => $rutaDB,
+				'orden' => $maxOrden + 1,
+			]);
+
+			return redirect()->to(base_url('admin/carrusel'))->with('success', 'Banner subido exitosamente.');
 		}
 
-		return redirect()->back()->with('error', 'Error al procesar la imagen.');
+		return redirect()->back()->with('error', 'Error al procesar el banner.');
 	}
 
-	private function loadAdminView($contentView, $data = [])
+	public function eliminarCarrusel($id_banner = null)
 	{
+		if (!$this->request->isAJAX() || $id_banner === null) {
+			return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Solicitud no válida.']);
+		}
+
+		$bannerModel = new bannerModel();
+		$banner = $bannerModel->find($id_banner);
+
+		if (empty($banner)) {
+			return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Banner no encontrado.']);
+		}
+
+		$rutaCompleta = ROOTPATH . 'public/' . $banner['ruta_imagen'];
+		$archivoEliminado = true;
+
+		if (file_exists($rutaCompleta) && is_file($rutaCompleta)) {
+			if (!@unlink($rutaCompleta)) {
+				$archivoEliminado = false;
+				log_message('error', 'Permiso denegado: Falló la eliminación física del banner: ' . $rutaCompleta);
+			}
+		}
+
+		$dbEliminado = $bannerModel->delete($id_banner);
+
+
+		if ($dbEliminado) {
+			return $this->response->setJSON(['success' => true, 'message' => 'Banner eliminado correctamente.']);
+		} else {
+			return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Error de Base de Datos: El registro no pudo ser eliminado.']);
+		}
+	}
+
+	private function loadAdminView($view, $data = [])
+	{
+		if (!isset($data) || !is_array($data)) {
+			$data = [];
+		}
 		$html = view('admin/layout/header', $data);
 		$html .= view('admin/layout/sidebar', $data);
-		$html .= view($contentView, $data);
+		$html .= view($view, $data);
 		$html .= view('admin/layout/footer', $data);
 
 		return $html;

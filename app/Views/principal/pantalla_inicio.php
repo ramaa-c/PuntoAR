@@ -10,12 +10,24 @@
         <!-- ===== CARRUSEL BANNERS ===== -->
         <div class="carousel">
             <div class="carousel-track">
-                <div class="carousel-slide"><img src="<?= base_url('public/images/bannerdianiño.png') ?>" alt="Imagen 1"></div>
-                <div class="carousel-slide"><img src="<?= base_url('public/images/bannernavidad.jpg') ?>" alt="Imagen 2"></div>
-                <div class="carousel-slide"><img src="<?= base_url('public/images/bannerregresoaclase.jpg') ?>" alt="Imagen 3"></div>
+
+                <?php if (!empty($banners)): ?>
+                    <?php foreach ($banners as $banner): ?>
+                        <div class="carousel-slide">
+                            <a href="<?= esc($banner['enlace'] ?? '#') ?>">
+                                <img
+                                    src="<?= base_url('public/' . $banner['ruta_imagen']) ?>"
+                                    alt="<?= esc($banner['titulo'] ?? 'Banner') ?>">
+                            </a>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="carousel-slide"><img src="<?= base_url('public/images/default_banner.png') ?>" alt="Banner por defecto"></div>
+                <?php endif; ?>
+
             </div>
-            <button class="carousel-btn prev"><i class="fa-solid fa-circle-arrow-left"></i></button>
-            <button class="carousel-btn next"><i class="fa-solid fa-circle-arrow-right"></i></button>
+            <button class="carousel-btn prev"><i class="fa-solid fa-arrow-left"></i></button>
+            <button class="carousel-btn next"><i class="fa-solid fa-arrow-right"></i></button>
         </div>
         <!-- ===== CARRUSEL PRODUCTOS ===== -->
         <?php if (!empty($carruseles)): ?>

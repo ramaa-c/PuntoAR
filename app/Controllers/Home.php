@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\CarruselProductoModel;
 use App\Models\ProductoModel;
+use App\Models\BannerModel;
 
 class Home extends BaseController
 {
@@ -12,6 +13,10 @@ class Home extends BaseController
     {
         $carruselProdModel = new CarruselProductoModel();
         $productoModel = new ProductoModel();
+        $bannerModel = new BannerModel();
+
+        $banners = $bannerModel->orderBy('orden', 'asc')->findAll();
+        $data['banners'] = $banners;
 
         $configuraciones = $carruselProdModel->orderBy('orden', 'asc')->findAll();
 

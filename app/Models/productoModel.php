@@ -65,4 +65,31 @@ class productoModel extends Model
             ->join('categorias', 'categorias.id_categoria = productos.id_categoria')
             ->findAll();
     }
+
+    public function getProductosFiltrados($categoriaId = null, $tipo = null, $texto = null)
+    {
+        $builder = $this->select('productos.*, categorias.nombre AS nombre_categoria')
+            ->join('categorias', 'categorias.id_categoria = productos.id_categoria', 'left')
+            ->where('productos.activo', 1); // solo productos activos
+
+        // Filtro por categoría
+        if (!empty($categoriaId)) {
+            $builder->where('productos.id_categoria', $categoriaId);
+        }
+
+        // Filtro por tipo (estandar / personalizable)
+        if (!empty($tipo)) {
+            $builder->where('productos.tipo', $tipo);
+        }
+
+        // Filtro por texto (nombre o descripción)
+        if (!empty($texto)) {
+            $builder->groupStart()
+                ->like('productos.nombre', $texto)
+                ->orLike('productos.descripcion', $texto)
+                ->groupEnd();
+        }
+
+        return $builder->findAll();
+    }
 }

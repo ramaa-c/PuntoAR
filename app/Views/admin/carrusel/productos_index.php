@@ -130,51 +130,51 @@
     </div>
 </div>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const botonesEliminar = document.querySelectorAll('.btn-eliminar-carrusel');
+    document.addEventListener('DOMContentLoaded', function() {
+        const botonesEliminar = document.querySelectorAll('.btn-eliminar-carrusel');
 
-    botonesEliminar.forEach(boton => {
-        boton.addEventListener('click', async function(e) {
-            e.preventDefault();
-            
-            const idCarrusel = this.dataset.id;
-            const nombre = this.dataset.nombre || 'el carrusel';
+        botonesEliminar.forEach(boton => {
+            boton.addEventListener('click', async function(e) {
+                e.preventDefault();
 
-            if (!confirm(`¿Seguro que deseas eliminar el carrusel "${nombre}"? Esta acción no se puede deshacer.`)) {
-                return;
-            }
+                const idCarrusel = this.dataset.id;
+                const nombre = this.dataset.nombre || 'el carrusel';
 
-            try {
-                const url = '<?= base_url('admin/carrusel/eliminar/') ?>' + idCarrusel;
-
-                const body = new URLSearchParams();
-                body.append('_method', 'POST'); 
-                body.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
-
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-                    },
-                    body: body.toString()
-                });
-
-                const data = await res.json();
-
-                if (res.ok && data.success) {
-                    const fila = boton.closest('tr');
-                    if (fila) fila.remove();
-                    alert('✅ Carrusel eliminado correctamente.');
-                } else {
-                    alert('⚠️ No se pudo eliminar el carrusel. ' + (data.message || ''));
-                    console.error(data);
+                if (!confirm(`¿Seguro que deseas eliminar el carrusel "${nombre}"? Esta acción no se puede deshacer.`)) {
+                    return;
                 }
-            } catch (err) {
-                console.error(err);
-                alert('❌ Error en la solicitud.');
-            }
+
+                try {
+                    const url = '<?= base_url('admin/carrusel/eliminar_productos/') ?>' + idCarrusel;
+
+                    const body = new URLSearchParams();
+                    body.append('_method', 'POST');
+                    body.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                        },
+                        body: body.toString()
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+                        const fila = boton.closest('tr');
+                        if (fila) fila.remove();
+                        alert('✅ Carrusel eliminado correctamente.');
+                    } else {
+                        alert('⚠️ No se pudo eliminar el carrusel. ' + (data.message || ''));
+                        console.error(data);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('❌ Error en la solicitud.');
+                }
+            });
         });
     });
-});
 </script>

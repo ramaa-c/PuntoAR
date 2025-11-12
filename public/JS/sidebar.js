@@ -3,6 +3,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function guardarCarrito() {
     localStorage.setItem("carrito", JSON.stringify(carrito));
+    document.dispatchEvent(
+      new CustomEvent("carritoActualizado", {
+        detail: { total: contarTotal() },
+      })
+    );
+  }
+
+  function contarTotal() {
+    return carrito.reduce((acc, item) => acc + (item.cantidad || 0), 0);
   }
 
   function renderCarrito() {
@@ -11,8 +20,27 @@ document.addEventListener("DOMContentLoaded", function () {
     container.innerHTML = "";
 
     if (carrito.length === 0) {
-      container.innerHTML = "<p>Tu carrito está vacío</p>";
+      container.innerHTML = `
+    <div class="carrito-vacio">
+      <p class="pp">Tu carrito está vacío</p>
+      <button id="btn-ver-productos" class="btn-ver-mas">Ver más productos</button>
+    </div>
+  `;
       footer.style.display = "none";
+
+      const btnVer = document.getElementById("btn-ver-productos");
+      btnVer.addEventListener("click", () => {
+        const sidebar = document.getElementById("carro_sidebar");
+        const overlay = document.getElementById("overlay");
+        const body = document.body;
+
+        body.classList.remove("cart-open");
+        sidebar.classList.remove("active");
+        overlay.classList.remove("active");
+
+        window.location.href = `${BASE_URL}productos`;
+      });
+
       return;
     }
 
@@ -37,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         </div>
                     </div>
                     <div class="item-actions">
-                        <a href="#" onclick="eliminarProducto(${index})" class="eliminar-btn">Eliminar</a>
+                        <a href="#" onclick="eliminarProducto(event, ${index})" class="eliminar-btn">Eliminar</a>
                         <p class="item-price">$${(
                           item.precio * item.cantidad
                         ).toFixed(2)}</p>
@@ -49,14 +77,17 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   window.agregarAlCarrito = function (producto) {
+    producto.cantidad = Number(producto.cantidad) || 1;
+
     let existe = carrito.find((p) => p.id === producto.id);
     if (existe) {
       existe.cantidad += producto.cantidad;
     } else {
       carrito.push(producto);
     }
+
     guardarCarrito();
-    renderCarrito();
+    if (typeof renderCarrito === "function") renderCarrito();
   };
 
   window.cambiarCantidad = function (index, delta) {
@@ -68,7 +99,8 @@ document.addEventListener("DOMContentLoaded", function () {
     renderCarrito();
   };
 
-  window.eliminarProducto = function (index) {
+  window.eliminarProducto = function (event, index) {
+    if (event) event.preventDefault();
     carrito.splice(index, 1);
     guardarCarrito();
     renderCarrito();
@@ -115,6 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   renderCarrito();
 });
+
 function iniciarCotizacion() {
   const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 

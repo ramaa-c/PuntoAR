@@ -1,43 +1,28 @@
 <div class="app-content-header">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-6"><h3 class="mb-0"><?= $title ?? 'Carrusel Principal' ?></h3></div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="<?= base_url('admin') ?>">Dashboard</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Carrusel</li>
-                </ol>
-            </div>
-        </div>
+        <h3 class="mb-0"><?= $title ?? 'Gestión de Banners Principales' ?></h3>
     </div>
 </div>
+
 <div class="app-content">
     <div class="container-fluid">
         <div class="row">
-            
+
             <div class="col-md-4">
                 <div class="card card-info">
-                    <div class="card-header">
-                        <h3 class="card-title">Subir Nueva Imagen</h3>
-                    </div>
+                    <div class="card-header"><h3 class="card-title">Subir Nuevo Banner</h3></div>
                     
-                    <?= form_open_multipart(base_url('admin/carrusel/subir'), ['id' => 'form-subir-carrusel']) ?>
+                    <?= form_open_multipart(base_url('admin/carrusel/subir'), ['id' => 'form-subir-banner']) ?>
                     <div class="card-body">
                         
                         <div class="form-group">
-                            <label for="imagen_carrusel">Seleccionar Imagen (JPG/PNG)</label>
-                            <div class="input-group">
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="imagen_carrusel" name="imagen_carrusel" accept="image/jpeg,image/png" required>
-                                    <label class="custom-file-label" for="imagen_carrusel">Elegir archivo...</label>
-                                </div>
-                            </div>
-                            <small class="form-text text-muted">Recomendado: Imágenes grandes y optimizadas para web (ej: 1920x600px).</small>
+                            <label for="imagen_banner">Seleccionar Banner (JPG/PNG)</label>
+                            <input type="file" class="form-control" id="imagen_banner" name="imagen_banner" accept="image/jpeg,image/png" required>
+                            <small class="form-text text-muted">Asegúrate de que la imagen sea de alta resolución para la web.</small>
                         </div>
-
-                    </div>
+                        </div>
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-info"><i class="bi bi-upload"></i> Subir y Guardar</button>
+                        <button type="submit" class="btn btn-info"><i class="bi bi-upload"></i> Subir Banner</button>
                     </div>
                     <?= form_close() ?>
                 </div>
@@ -45,40 +30,64 @@
             
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Imágenes Activas y Orden</h3>
-                        <small class="text-muted ml-2">Arrastra y suelta para cambiar el orden.</small>
-                    </div>
+                    <div class="card-header"><h3 class="card-title">Banners Activos</h3></div>
                     <div class="card-body">
                         
-                        <ul id="carrusel-list" class="list-group">
+                        <div class="row">
                             <?php if (empty($imagenes)): ?>
-                                <li class="list-group-item text-center">No hay imágenes activas en el carrusel.</li>
+                                <p class="text-muted text-center">No hay banners activos.</p>
                             <?php else: ?>
                                 <?php foreach ($imagenes as $img): ?>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center" data-id="<?= $img->id ?>">
-                                        <div class="d-flex align-items-center">
-                                            <i class="bi bi-grip-vertical handle-drag mr-2" style="cursor: grab;"></i>
-                                            <img src="<?= base_url('public/uploads/carrusel/' . $img->nombre_archivo) ?>" alt="Imagen Carrusel" style="width: 100px; height: 50px; object-fit: cover;" class="img-thumbnail mr-3">
-                                            <span>Orden: <?= $img->orden ?></span>
-                                        </div>
+                                    <div class="col-md-4 mb-3 d-flex flex-column align-items-center" data-id="<?= $img['id'] ?>">
+                                        <img src="<?= base_url('public/' . $img['ruta_imagen']) ?>" 
+                                             alt="Banner #<?= $img['orden'] ?>" 
+                                             class="img-fluid border mb-2" 
+                                             style="height: 100px; object-fit: cover;">
                                         
-                                        <div>
-                                            <span class="badge text-bg-secondary mr-2">ID: <?= $img->id ?></span>
-                                            <a href="<?= base_url('admin/carrusel/eliminar/' . $img->id) ?>" class="btn btn-danger btn-sm" title="Eliminar Imagen" onclick="return confirm('¿Está seguro de eliminar esta imagen?');"><i class="bi bi-trash"></i></a>
-                                        </div>
-                                    </li>
+                                        <small class="text-muted">Orden: <?= $img['orden'] ?></small>
+                                        
+                                        <button type="button" 
+                                                class="btn btn-danger btn-sm btn-eliminar-banner mt-2" 
+                                                data-id="<?= $img['id'] ?>">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </div>
                                 <?php endforeach; ?>
                             <?php endif; ?>
-                        </ul>
-                        
-                        <div class="mt-3">
-                            <button id="guardar-orden-btn" class="btn btn-success"><i class="bi bi-arrow-down-up"></i> Guardar Nuevo Orden</button>
                         </div>
                         
                     </div>
-                    </div>
                 </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-eliminar-banner').forEach(button => {
+        button.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const idBanner = this.getAttribute('data-id');
+            const row = this.closest('.col-md-4');
+            
+            if (confirm('¿Seguro de eliminar este banner?')) {
+                fetch('<?= base_url('admin/carrusel/eliminar_banner/') ?>' + idBanner, {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', '<?= csrf_header() ?>': '<?= csrf_hash() ?>' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        row.remove();
+                        alert('Banner eliminado.');
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => { alert('Fallo en la solicitud.'); });
+            }
+        });
+    });
+});
+</script>

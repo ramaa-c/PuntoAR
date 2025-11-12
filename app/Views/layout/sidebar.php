@@ -11,7 +11,7 @@
 
         <div class="cart-footer">
             <button id="cotizar-btn" class="main-action-btn" onclick="iniciarCotizacion()">Cotizar pedido</button>
-            <a href="#" class="more-products-link">Ver más productos</a>
+            <a href="<?= base_url('/productos') ?>" class="more-products-link">Ver más productos</a>
         </div>
     </div>
 </aside>
