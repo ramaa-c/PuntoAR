@@ -61,7 +61,8 @@
                         data-id="<?= $producto['id_producto'] ?>"
                         data-nombre="<?= esc($producto['nombre']) ?>"
                         data-precio="<?= $producto['precio'] ?>"
-                        data-imagen="<?= esc($producto['imagen']) ?>">
+                        data-imagen="<?= esc(str_replace(base_url('public/') , '', base_url('public/' . $producto['imagen']))) ?>"
+                        data-producto-tipo="<?= esc($producto['tipo']) ?>">
                         Comprar
                     </button>
                 </div>

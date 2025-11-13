@@ -140,4 +140,16 @@ class ProductoController extends BaseController
 
         return redirect()->to('/')->with('error', 'Producto no encontrado');
     }
+
+    public function categoriasJson()
+    {
+        $categoriaModel = new categoriaModel();
+
+        $categorias = $categoriaModel
+            ->select('id_categoria, nombre')
+            ->orderBy('nombre', 'asc')
+            ->findAll();
+
+        return $this->response->setJSON($categorias);
+    }
 }

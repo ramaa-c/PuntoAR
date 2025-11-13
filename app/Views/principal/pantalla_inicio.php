@@ -57,7 +57,8 @@
                                             data-id="<?= $producto['id_producto'] ?>"
                                             data-nombre="<?= esc($producto['nombre']) ?>"
                                             data-precio="<?= $producto['precio'] ?>"
-                                            data-imagen="<?= esc($producto['imagen']) ?>"> Comprar
+                                            data-imagen="<?= esc($producto['imagen']) ?>"
+                                            data-producto-tipo="<?= esc($producto['tipo']) ?>"> Comprar
                                         </button>
                                     </div>
 
@@ -77,6 +78,45 @@
         <?php else: ?>
             <p>No hay carruseles de productos configurados.</p>
         <?php endif; ?>
+
+        <section class="instagram-feed-section">
+            <div class="instagram-header">
+                <a href="https://www.instagram.com/puntoarsanluis?igsh=M3V4YndhNjBoamRh" target="_blank">
+                    <i class="fa-brands fa-instagram"></i>
+                    <p>
+                        <strong>Seguinos en @puntoarsanluis</strong>
+                    </p>
+                </a>
+            </div>
+
+            <div class="instagram-grid">
+
+                <div class="instagram-item">
+                    <a href="https://www.instagram.com/p/DLLw9watohy/" target="_blank" rel="noopener noreferrer">
+                        <img src="<?= base_url('public/images/instagram/ig1.webp') ?>" alt="Instagram Post 1">
+                    </a>
+                </div>
+
+                <div class="instagram-item">
+                    <a href="https://www.instagram.com/p/DNrS7G_4gLB/?img_index=1" target="_blank" rel="noopener noreferrer">
+                        <img src="<?= base_url('public/images/instagram/ig2.webp') ?>" alt="Instagram Post 2">
+                    </a>
+                </div>
+
+                <div class="instagram-item">
+                    <a href="https://www.instagram.com/p/DNOkhJUJ2lI/?img_index=1" target="_blank" rel="noopener noreferrer">
+                        <img src="<?= base_url('public/images/instagram/ig3.webp') ?>" alt="Instagram Post 3">
+                    </a>
+                </div>
+
+                <div class="instagram-item">
+                    <a href="https://www.instagram.com/p/DNTVdY-tFyo/?img_index=1" target="_blank" rel="noopener noreferrer">
+                        <img src="<?= base_url('public/images/instagram/ig4.webp') ?>" alt="Instagram Post 4">
+                    </a>
+                </div>
+
+            </div>
+        </section>
 
     </main>
     <script src="<?= base_url('public/JS/banners.js') ?>"></script>
@@ -107,13 +147,15 @@
                     const nombre = this.getAttribute("data-nombre");
                     const precio = parseFloat(this.getAttribute("data-precio"));
                     const imagen = this.getAttribute("data-imagen");
+                    const tipo = this.getAttribute("data-producto-tipo");
 
                     agregarAlCarrito({
                         id: id,
                         nombre: nombre,
                         precio: precio,
                         cantidad: 1,
-                        imagen: imagen
+                        imagen: imagen,
+                        tipo: tipo
                     });
                 });
             });

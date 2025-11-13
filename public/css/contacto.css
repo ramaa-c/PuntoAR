@@ -15,8 +15,8 @@ body {
 .contact-wrapper {
     max-width: 1200px;
     margin: 50px auto;
-    margin-top: 150px;
-    padding: 20px;
+    margin-top: 200px;
+    padding: 30px;
     background-color: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
@@ -25,7 +25,6 @@ h1 {
     font-size: 2.5em;
     font-weight: 400;
     margin-bottom: 40px;
-    padding-top: 10px;
 }
 
 .contact-grid {
@@ -66,17 +65,17 @@ h1 {
     margin-bottom: 25px;
 }
 
-label {
+.form-group label {
     display: block;
     font-weight: 500;
     margin-bottom: 8px;
     color: #333;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-textarea {
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group textarea {
     width: 100%;
     padding: 12px 15px;
     border: 1px solid #ccc;
@@ -86,18 +85,18 @@ textarea {
     transition: border-color 0.3s;
 }
 
-input:focus,
-textarea:focus {
+.form-group input:focus,
+.form-group textarea:focus {
     border-color: #999;
     outline: none;
 }
 
-textarea {
+.form-group textarea {
     resize: vertical;
 }
 
 
-button[type="submit"] {
+.contact-form button[type="submit"] {
     background-color: #333;
     color: white;
     padding: 15px 25px;
@@ -110,7 +109,7 @@ button[type="submit"] {
     width: 100%;
 }
 
-button[type="submit"]:hover {
+.contact-form button[type="submit"]:hover {
     background-color: #000000;
 }
 

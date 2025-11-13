@@ -48,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const nombre = this.getAttribute("data-nombre");
       const precio = parseFloat(this.getAttribute("data-precio"));
       const imagen = this.getAttribute("data-imagen");
+      const tipo = this.getAttribute("data-producto-tipo");
 
       const controlDiv = this.closest(".quantity-control");
       const qtyInput = controlDiv.querySelector(".qty-input");
@@ -60,12 +61,14 @@ document.addEventListener("DOMContentLoaded", function () {
           precio: precio,
           cantidad: cantidad,
           imagen: imagen,
+          tipo: tipo
         });
       } else {
         console.warn(
           "La función agregarAlCarrito no está definida en la ventana global."
         );
       }
+      window.dispatchEvent(new Event('carritoActualizado'));
     });
   });
 });

@@ -22,10 +22,10 @@ $routes->get('/perfil', 'Auth::perfil', ['filter' => 'auth']);
 $routes->get('/producto/(:num)', 'ProductoController::ver/$1');
 $routes->get('/productos', 'ProductoController::index');
 $routes->post('/productos/filtrar', 'ProductoController::filtrar');
+$routes->get('/categorias', 'ProductoController::categoriasJson');
 
-
-$routes->match(['get', 'post'], '/pedidos/crear', 'PedidosController::crear', ['filter' => 'auth']);
-$routes->get('/pedidos', 'PedidosController::index', ['filter' => 'auth']);
+$routes->match(['get', 'post'], '/pedidos/crear', 'PedidosController::crear');
+$routes->get('/pedidos', 'PedidosController::index');
 $routes->match(['get', 'post'], '/pedidos/enviar', 'PedidosController::enviarPedido');
 
 $routes->group('admin', function ($routes) {

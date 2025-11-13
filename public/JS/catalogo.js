@@ -10,6 +10,27 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   const tipoRadios = document.querySelectorAll("input[name='tipo']");
   const totalElem = document.getElementById("totalProductos");
+  const params = new URLSearchParams(window.location.search);
+  const qParam = params.get("q");
+  const tipoParam = params.get("tipo");
+  const categoriasParam = params.get("categorias");
+
+  if (qParam && buscarInput) buscarInput.value = qParam;
+  if (tipoParam) {
+    const radio = document.querySelector(
+      `input[name='tipo'][value='${tipoParam}']`
+    );
+    if (radio) radio.checked = true;
+  }
+  if (categoriasParam) {
+    const ids = categoriasParam.split(",").map((id) => id.trim());
+    ids.forEach((id) => {
+      const chk = document.querySelector(
+        `#filtro-categorias input[value='${id}']`
+      );
+      if (chk) chk.checked = true;
+    });
+  }
 
   function debounce(fn, delay = 300) {
     let t;
@@ -65,15 +86,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!resp.ok) throw new Error("Error en la petición");
 
       const productos = await resp.json();
-
       const totalHeader = resp.headers.get("X-Total-Count");
       const total = totalHeader ? Number(totalHeader) : productos.length;
 
       renderizarProductos(productos);
+      inicializarEventosProducto();
 
-      if (totalElem) {
-        totalElem.textContent = `Total de productos: ${total}`;
-      }
+      if (totalElem) totalElem.textContent = `Total de productos: ${total}`;
     } catch (err) {
       console.error(err);
       contenedorProductos.innerHTML =
@@ -101,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
     productos.forEach((p) => {
       const card = document.createElement("div");
       card.className = "producto-card";
+      card.setAttribute("data-url", `producto/${p.id_producto}`);
       card.innerHTML = `
         <img src="${p.imagen}" alt="${escapeHtml(p.nombre)}">
         <p class="producto-precio">$${Number(p.precio).toLocaleString()}</p>
@@ -108,25 +128,48 @@ document.addEventListener("DOMContentLoaded", () => {
         <button class="btn-comprar" data-id="${p.id_producto}" 
                 data-nombre="${escapeHtml(p.nombre)}" 
                 data-precio="${p.precio}" 
-                data-imagen="${p.imagen}">
+                data-imagen="${p.imagen}"
+                data-producto-tipo="${p.tipo}">
           Comprar
         </button>
       `;
       contenedorProductos.appendChild(card);
     });
+  }
+
+  function inicializarEventosProducto() {
+    document.querySelectorAll(".producto-card").forEach((item) => {
+      item.replaceWith(item.cloneNode(true));
+    });
+
+    const productosNuevos = document.querySelectorAll(".producto-card");
+    productosNuevos.forEach((item) => {
+      item.addEventListener("click", (e) => {
+        if (!e.target.classList.contains("btn-comprar")) {
+          const url = item.getAttribute("data-url");
+          if (url) window.location.href = url;
+        }
+      });
+    });
 
     document.querySelectorAll(".btn-comprar").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-id");
-        const nombre = btn.getAttribute("data-nombre");
-        const precio = parseFloat(btn.getAttribute("data-precio"));
-        const imagen = btn.getAttribute("data-imagen");
+      btn.replaceWith(btn.cloneNode(true));
+    });
 
+    document.querySelectorAll(".btn-comprar").forEach((button) => {
+      button.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const id = button.getAttribute("data-id");
+        const nombre = button.getAttribute("data-nombre");
+        const precio = parseFloat(button.getAttribute("data-precio"));
+        const imagen = button.getAttribute("data-imagen");
+        const tipo = button.getAttribute("data-producto-tipo");
         if (typeof window.agregarAlCarrito === "function") {
-          window.agregarAlCarrito({ id, nombre, precio, cantidad: 1, imagen });
+          window.agregarAlCarrito({ id, nombre, precio, cantidad: 1, imagen, tipo });
         } else {
           console.warn("agregarAlCarrito no está definida");
         }
+        window.dispatchEvent(new Event("carritoActualizado"));
       });
     });
   }
@@ -145,7 +188,6 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   tipoRadios.forEach((r) => r.addEventListener("change", filtrarProductos));
   ordenarSelect.addEventListener("change", filtrarProductos);
-
   aplicarPrecioBtn?.addEventListener("click", (e) => {
     e.preventDefault();
     filtrarProductos();
@@ -155,40 +197,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const buscarDebounced = debounce(filtrarProductos, 350);
     buscarInput.addEventListener("input", buscarDebounced);
   }
-});
 
-document.addEventListener("DOMContentLoaded", function () {
-  const productos = document.querySelectorAll(".producto-card");
-
-  productos.forEach((item) => {
-    item.addEventListener("click", function (e) {
-      if (!e.target.classList.contains("btn-comprar")) {
-        const url = item.getAttribute("data-url");
-        if (url) {
-          window.location.href = url;
-        }
-      }
-    });
-  });
-
-  const botonesComprar = document.querySelectorAll(".btn-comprar");
-
-  botonesComprar.forEach((button) => {
-    button.addEventListener("click", function (e) {
-      e.stopPropagation();
-
-      const id = this.getAttribute("data-id");
-      const nombre = this.getAttribute("data-nombre");
-      const precio = parseFloat(this.getAttribute("data-precio"));
-      const imagen = this.getAttribute("data-imagen");
-
-      agregarAlCarrito({
-        id: id,
-        nombre: nombre,
-        precio: precio,
-        cantidad: 1,
-        imagen: imagen,
-      });
-    });
-  });
+  if (qParam || tipoParam || categoriasParam) {
+    filtrarProductos();
+  } else {
+    inicializarEventosProducto();
+  }
 });

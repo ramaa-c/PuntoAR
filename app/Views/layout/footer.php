@@ -32,7 +32,7 @@
             <div class="footer-redes">
                 <div class="red"><i class="fa-brands fa-whatsapp"></i><a href="#" target="_blank">+54 9 266 470-3362</a> - Solo WhatsApp</div>
                 <div class="red"><i class="fa-brands fa-instagram"></i><a href="https://www.instagram.com/puntoarsanluis?igsh=M3V4YndhNjBoamRh" target="_blank">PuntoAR</a></div>
-                <div class="red"><i class="fa-solid fa-envelope"></i><a href="" target="_blank">Escribanos por correo</a></div>
+                <div class="red"><i class="fa-solid fa-envelope"></i><a href="mailto:puntoar.contact@gmail.com?subject=Consulta%20desde%20la%20Web">Escribanos por correo</a></div>
             </div>
         </div>
     </div>

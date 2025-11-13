@@ -11,9 +11,8 @@
                     </p>
                     
                     <div class="contact-details">
-                        <p><i class="fa-solid fa-phone"></i>  54 9112-2534520</p>
-                        <p><i class="fa-brands fa-whatsapp"></i>  11 2253-4520 - Solo Whatsapp</p>
-                        <p><i class="fa-solid fa-envelope"></i>  PuntoAR@gmail.com</p>
+                        <p><i class="fa-brands fa-whatsapp"></i>  +54 9 266 470-3362 - Solo Whatsapp</p>
+                        <p><i class="fa-solid fa-envelope"></i>  puntoar.contact@gmail.com</p>
                         <p><i class="fa-solid fa-location-dot"></i>  La Punta, San Luis</p>
                     </div>
                 </div>

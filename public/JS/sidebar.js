@@ -3,11 +3,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function guardarCarrito() {
     localStorage.setItem("carrito", JSON.stringify(carrito));
-    document.dispatchEvent(
-      new CustomEvent("carritoActualizado", {
-        detail: { total: contarTotal() },
-      })
-    );
+
+    const event = new CustomEvent("carritoActualizado", {
+      detail: { total: contarTotal() },
+    });
+    document.dispatchEvent(event);
+    window.dispatchEvent(event);
   }
 
   function contarTotal() {
@@ -50,9 +51,11 @@ document.addEventListener("DOMContentLoaded", function () {
       container.innerHTML += `
                 <div class="cart-item" data-index="${index}">
                     <div class="item-info">
-                        <img src="${BASE_URL}public/${item.imagen}" alt="${
-        item.nombre
-      }">
+                        <img src="${
+                          item.imagen.startsWith("http")
+                            ? item.imagen
+                            : BASE_URL + "public/" + item.imagen
+                        }" alt="${item.nombre}">
                         <div>
                             <p class="item-name">${item.nombre}</p>
                             <div class="quantity-control-sidebar">
@@ -167,6 +170,7 @@ function iniciarCotizacion() {
             <input type="hidden" name="productos[${index}][nombre]" value="${item.nombre}">
             <input type="hidden" name="productos[${index}][cantidad]" value="${item.cantidad}">
             <input type="hidden" name="productos[${index}][precio]" value="${item.precio}">
+            <input type="hidden" name="productos[${index}][tipo]" value="${item.tipo || ''}">
         `;
   });
 

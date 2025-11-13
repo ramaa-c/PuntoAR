@@ -1,16 +1,3 @@
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #000000;
-    color: white;
-    padding: 10px 20px;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-}
-
 .navbar_center {
     flex: 1;
     display: flex;
@@ -81,31 +68,127 @@
 }
 
 .cart-badge {
-    /* Posicionamiento y Estilo de la Burbuja */
     position: absolute;
     top: -4px;
-    /* Ajusta la altura para que flote sobre el ícono */
     right: 0px;
-    /* Ajusta la posición horizontal */
-
     background-color: #ff004c;
-    /* Rojo Brillante (como en el ejemplo) */
     color: white;
-
-    /* Forma y Tamaño */
     border-radius: 100%;
-    /* Lo hace redondo */
     padding: 2px 6px;
     font-size: 0.7em;
     font-weight: bold;
     min-width: 18px;
-    /* Asegura un círculo visible */
     text-align: center;
     line-height: 1.3;
-
-    /* Inicialmente oculto si el contador es 0 (gestionado por JS) */
     display: none;
-
-    /* Aseguramos que quede sobre otros elementos */
     z-index: 10;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #000;
+    color: white;
+    padding: 10px 20px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    height: 90px;
+}
+
+.navbar-bottom {
+    background-color: #000000;
+    padding: 0 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 90px;
+    width: 100%;
+    z-index: 999;
+    margin-left: -20px;
+    border-top: 1px solid #333;
+}
+
+.navbar-bottom-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    max-width: 1200px;
+    min-width: auto;
+    margin: 0 auto;
+    padding: 5px 0;
+}
+
+.search-bar-container {
+    display: flex;
+    border-radius: 4px;
+    overflow: hidden;
+    max-width: 350px; 
+    margin-right: 15px;
+    background-color: white;
+}
+
+.search-bar-container input {
+    border: none;
+    padding: 8px 12px;
+    font-size: 0.9em;
+    width: 100%;
+    outline: none;
+}
+
+.search-bar-container button {
+    background-color: #c1ff72;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #000;
+}
+
+.navbar-bottom ul {
+    list-style: none;
+    display: flex;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar-bottom ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+    font-size: 0.9em;
+    font-weight: 400;
+    transition: background-color 0.2s;
+}
+
+.navbar-bottom ul li a:hover {
+    background-color: #333333;
+    border-radius: 5px;
+}
+
+.navbar-bottom ul li.has-submenu {
+    position: relative;
+}
+
+.navbar-bottom ul li.has-submenu .submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #333333;
+    min-width: 180px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+    z-index: 1001;
+    list-style: none;
+    padding: 0;
+}
+
+.navbar-bottom ul li.has-submenu:hover .submenu {
+    display: block;
+    border-color: #ffffff;
+}
+
+.navbar-bottom ul li.has-submenu .submenu li a {
+    padding: 8px 15px;
 }

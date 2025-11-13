@@ -1,13 +1,13 @@
 .contenedor_principal {
     display: flex;
     flex: 1;
-    padding-top: 80px;
+    margin-top: 138px;
 }
 
 .contenido_principal {
     flex-grow: 1;
     padding: 0;
-    background-color: #ffffffff;
+    background-color: #f7f7f7;
 }
 
 /* ===== CARRUSEL BANNERS ===== */
@@ -61,13 +61,11 @@
 /* ===== PRODUCTOS ===== */
 .product-carousel-visible {
     position: relative;
-    /* 🔹 esto permite que los botones se posicionen relativos a este contenedor */
     width: 100%;
     max-width: 1400px;
     margin: 40px auto;
     background-color: #fff;
     padding: 40px 60px;
-    /* 🔹 agregamos espacio lateral para las flechas */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 }
@@ -82,7 +80,7 @@
 
 .carousel-wrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     position: relative;
     overflow: hidden;
 }
@@ -92,14 +90,15 @@
     -webkit-overflow-scrolling: touch;
     padding: 0 10px;
     flex-grow: 1;
+    gap: 3px;
     width: auto;
     transition: transform 0.5s ease;
 }
 
 .product-item-visible {
-    flex: 0 0 calc(100% / 6);
-    min-width: calc(100% / 6);
-    max-width: calc(100% / 6);
+    flex: 0 0 calc(100% / 5);
+    min-width: calc(100% / 5);
+    max-width: calc(100% / 5);
     box-sizing: border-box;
     text-align: center;
     display: flex;
@@ -126,8 +125,9 @@
     height: 100%;
     object-fit: cover;
     border-radius: 8px;
-    padding-left: 10px;
-    background: white
+    background: white;
+    cursor: pointer;
+    transition: transform 0.3s;
 }
 
 .product-name {
@@ -199,7 +199,6 @@
 .carousel-arrow {
     position: absolute;
     top: 50%;
-    /* 🔹 centra verticalmente */
     transform: translateY(-50%);
     font-size: 2.2rem;
     background: none;
@@ -241,4 +240,73 @@
 
 .dot.active {
     background-color: #333;
+}
+
+/*IG*/
+.instagram-feed-section {
+    max-width: 1400px;
+    margin: 80px auto;
+    text-align: center;
+}
+
+.instagram-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    font-weight: 500;
+    
+}
+
+.instagram-header a{
+    text-decoration: none;
+    color: #333;
+    display: contents;
+    font-size: larger;
+
+}
+
+.instagram-header i {
+    font-size: 1.5em;
+}
+
+.instagram-grid {
+    display: flex;
+    gap: 30px;
+    justify-content: space-between;
+}
+
+.instagram-item {
+    flex: 1 1 0; 
+    max-width: 480px; 
+    overflow: hidden;
+    border-radius: 5px;
+    aspect-ratio: 1 1;
+    position: relative;
+}
+
+.instagram-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    display: block;
+    transition: transform 0.3s;
+}
+
+.instagram-item img:hover {
+    transform: scale(1.05);
+}
+.instagram-item a {
+    display: block;
+    line-height: 0;
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+    height: 100%;
+}
+
+.instagram-item a:hover img {
+    transform: scale(1.05);
 }

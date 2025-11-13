@@ -75,9 +75,9 @@ class Home extends BaseController
             }
 
             $email = \Config\Services::email();
-            $email->setTo('raramiro.240@gmail.com');
+            $email->setTo('puntoar.contact@gmail.com');
             $email->setFrom($request->getPost('email'), $request->getPost('nombre'));
-            $email->setSubject('Contacto desde PuntoAR');
+            $email->setSubject('Mensaje desde la web de PuntoAR - San Luis');
             $email->setMessage(
                 "Nombre: " . $request->getPost('nombre') . "\n" .
                     "Email: " . $request->getPost('email') . "\n" .

@@ -54,6 +54,7 @@
                     data-nombre="<?= esc($producto['nombre']) ?>"
                     data-precio="<?= $producto['precio'] ?>"
                     data-imagen="<?= esc($producto['imagen']) ?>"
+                    data-producto-tipo="<?= esc($producto['tipo']) ?>"
                 >
                     Agregar al carrito
                 </button>

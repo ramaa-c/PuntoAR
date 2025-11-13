@@ -25,23 +25,38 @@ class PedidosController extends Controller
         return view('pedidos/index', $data);
     }
 
-    public function crear(){
+    public function crear()
+    {
         $session = session();
-        if (!$session->get('logged_in')) {
-            return redirect()->to('/login')->with('error', 'Debes iniciar sesión para realizr un pedido.');
-        }
+
         if ($this->request->getMethod() === 'POST') {
+            if ($session->get('logged_in')) {
+                $nombre   = $session->get('nombre');
+                $email    = $session->get('email');
+                $telefono = $session->get('telefono');
+                $idUsuario = $session->get('id_usuario');
+            } else {
+                $nombre   = $this->request->getPost('nombre_cliente');
+                $email    = $this->request->getPost('email_cliente');
+                $telefono = $this->request->getPost('telefono_cliente');
+                $idUsuario = null;
+            }
+
+            if (empty($nombre) || empty($email)) {
+                return redirect()->back()->with('error', 'Debe completar su nombre y correo electrónico para continuar.');
+            }
+
             $data = [
-                'id_usuario'       => $session->get('id_usuario'),
-                'nombre_cliente'   => $session->get('nombre'),
-                'email_cliente'    => $session->get('email'),
-                'telefono_cliente' => $session->get('telefono') ?? null,
+                'id_usuario'       => $idUsuario,
+                'nombre_cliente'   => $nombre,
+                'email_cliente'    => $email,
+                'telefono_cliente' => $telefono ?? null,
                 'total'            => $this->request->getPost('total') ?? 0,
             ];
 
             $pedidoId = $this->pedidoModel->insert($data);
 
-            $productos = $this->request->getPost('productos'); 
+            $productos = $this->request->getPost('productos');
             $archivos  = $this->request->getFiles();
 
             if ($productos && is_array($productos)) {
@@ -59,14 +74,14 @@ class PedidosController extends Controller
                         'id_pedido'       => $pedidoId,
                         'id_producto'     => $prod['id'],
                         'cantidad'        => $prod['cantidad'],
-                        'especificaciones'=> $prod['especificaciones'] ?? null,
+                        'especificaciones' => $prod['especificaciones'] ?? null,
                         'precio_unitario' => $prod['precio'],
                         'detalleImagen'   => $imagenPath
                     ]);
                 }
             }
 
-            $this->enviarEmailConfirmacion( $pedidoId);
+            $this->enviarEmailConfirmacion($pedidoId);
 
             return redirect()->to('/')->with('msg', 'Pedido enviado correctamente.');
         }
@@ -106,11 +121,8 @@ class PedidosController extends Controller
         $this->email->send();
     }
 
-    public function enviarPedido(){
-        $session = session();
-        if (!$session->get('logged_in')) {
-            return redirect()->to('/login')->with('error', 'Debes iniciar sesión para enviar un pedido.');
-        }
+    public function enviarPedido()
+    {
 
         $productos = $this->request->getPost('productos');
 
@@ -128,6 +140,4 @@ class PedidosController extends Controller
             'total'     => $total
         ]);
     }
-
-
 }

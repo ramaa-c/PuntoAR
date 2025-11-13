@@ -1,12 +1,15 @@
 .contenedor-catalogo {
     display: flex;
-    max-width: 1200px;
+    max-width: 1250px;
+    min-width: 1250px;
     margin: 20px auto;
-    padding: 0 20px;
-    padding-top: 90px;
+    padding: 0 40px;
+    padding-top: 40px;
     padding-bottom: 90px;
+    margin-top: 160px;
+    border-radius: 8px;
     gap: 30px;
-    min-height: 80vh;
+    min-height: 120vh;
     background-color: #ffffffff;
 }
 
@@ -36,15 +39,16 @@
     margin-bottom: 10px;
 }
 
-.filtro-grupo input{
-    padding: 2.5px;
-    padding-left: 5px;
-    border-radius:7px;
+.filtro-grupo input {
+    padding: 5.5px;
+    padding-left: 10px;
+    border-radius: 7px;
 }
-.filtro-grupo label{
+
+.filtro-grupo label {
     padding: 2.5px;
     padding-left: 5px;
-    border-radius:7px;
+    border-radius: 7px;
 }
 
 .filtro-opcion {
@@ -64,15 +68,6 @@
     display: flex;
     gap: 10px;
     align-items: center;
-}
-
-.precio-input {
-    width: 60px;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 0.9em;
-    text-align: center;
 }
 
 .btn-aplicar {
@@ -97,11 +92,11 @@
     border-bottom: 1px solid #eee;
 }
 
-.catalogo-header select{
+.catalogo-header select {
     padding: 2.5px;
     padding-left: 5px;
     margin-left: 5px;
-    border-radius:7px;
+    border-radius: 7px;
 }
 
 #productos-listado {
@@ -119,18 +114,20 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
-    gap: 20px; 
+    gap: 20px;
 }
 
 #productos-listado.ajuste-conteo-bajo .producto-card {
-    width: 280px; 
+    width: 280px;
 }
 
 #productos-listado p {
-    width: 100%; 
+    width: 100%;
 }
 
 .producto-card {
+    max-width: 280px;
+    height: 387px;
     border: 1px solid #ddd;
     padding: 15px;
     text-align: center;
@@ -145,8 +142,9 @@
 }
 
 .producto-card img {
-    max-width: 100%;
-    height: auto;
+    height: 248px;
+    object-fit: cover;
+    width: 248px;
     margin-bottom: 10px;
     border-radius: 4px;
 }

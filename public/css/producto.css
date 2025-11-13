@@ -14,11 +14,10 @@ body {
 
 .product-wrapper {
     max-width: 1200px;
-    min-height: 800px;
+    min-height: 700px;
     margin: 50px auto;
-    padding: 20px;
-    padding-top: 115px;
-    padding-bottom: 115px;
+    margin-top: 200px;
+    padding: 40px;
 }
 
 .breadcrumb {
