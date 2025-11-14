@@ -7,13 +7,11 @@
     <div class="pedido-content-wrapper">
 
         <div class="pedido-left-panel">
-            <!-- MOVÍ los datos del cliente DENTRO del mismo <form> -->
             <form action="<?= base_url('/pedidos/crear') ?>" method="post" enctype="multipart/form-data">
                 <?= csrf_field() ?>
 
                 <?php $sess = session(); ?>
 
-                <!-- Si no está logueado mostramos el form para completar -->
                 <?php if (! $sess->get('logged_in')): ?>
                     <div class="cliente-form-wrapper">
                         <div class="cliente-form">
@@ -39,8 +37,6 @@
                         </div>
                     </div>
                 <?php else: ?>
-                    <!-- Si está logueado, agrego campos hidden con los datos de sesión
-                         (esto hace explícito lo que se envía y evita dependencia implícita) -->
                     <input type="hidden" name="nombre_cliente" value="<?= esc($sess->get('nombre')) ?>">
                     <input type="hidden" name="email_cliente" value="<?= esc($sess->get('email')) ?>">
                     <input type="hidden" name="telefono_cliente" value="<?= esc($sess->get('telefono') ?? '') ?>">
@@ -117,12 +113,10 @@
                                         <?php endif; ?>
                                     </td>
 
-                                    <!-- Campos ocultos: envio de datos del producto -->
                                     <input type="hidden" name="productos[<?= $i ?>][id]" value="<?= esc($p['id']) ?>">
                                     <input type="hidden" name="productos[<?= $i ?>][nombre]" value="<?= esc($p['nombre']) ?>">
                                     <input type="hidden" name="productos[<?= $i ?>][cantidad]" value="<?= esc($p['cantidad']) ?>">
                                     <input type="hidden" name="productos[<?= $i ?>][precio]" value="<?= esc($p['precio']) ?>">
-                                    <!-- imagen original como ruta relativa (sin base_url), el controller ya lo maneja -->
                                     <?php if (!empty($p['imagen'])): ?>
                                         <input type="hidden"
                                             name="productos[<?= $i ?>][imagen_original]"

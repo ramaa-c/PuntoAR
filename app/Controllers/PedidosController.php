@@ -28,7 +28,6 @@ class PedidosController extends Controller
             return redirect()->to('/')->with('error', 'Acción inválida');
         }
 
-        // DATOS DEL CLIENTE
         if ($session->get('logged_in')) {
             $nombre    = $session->get('nombre');
             $email     = $session->get('email');
@@ -45,7 +44,6 @@ class PedidosController extends Controller
             return redirect()->back()->with('error', 'Debe completar su nombre y correo electrónico.');
         }
 
-        // CREAR PEDIDO
         $pedidoData = [
             'id_usuario'       => $idUsuario,
             'nombre_cliente'   => $nombre,
@@ -56,7 +54,6 @@ class PedidosController extends Controller
 
         $pedidoId = $this->pedidoModel->insert($pedidoData);
 
-        // PRODUCTOS DEL FORM
         $productos = $this->request->getPost('productos');
         $files     = $this->request->getFiles();
 
@@ -66,17 +63,12 @@ class PedidosController extends Controller
 
         $productoModel = new productoModel();
 
-
-        // ===================================================
-        // INSERTAR DETALLES DEL PEDIDO
-        // ===================================================
         foreach ($productos as $i => $prod) {
 
             $productoBD = null;
             $nombreProducto = $prod['nombre'] ?? null;
             $imagenPrincipal = null;
 
-            // OBTENER INFO DESDE BD SI NO VINO
             if (empty($nombreProducto) && !empty($prod['id'])) {
 
                 $productoBD = $productoModel->find((int)$prod['id']);
@@ -90,7 +82,6 @@ class PedidosController extends Controller
                 }
             }
 
-            // SUBIR ARCHIVO PERSONALIZADO
             $subidaPorUsuario = 0;
 
             if (
@@ -104,9 +95,8 @@ class PedidosController extends Controller
                 $file->move(FCPATH . 'public/uploads/pedidos', $newName);
 
                 $imagenPrincipal = 'uploads/pedidos/' . $newName;
-                $subidaPorUsuario = 1; // <-- IMPORTANTE
+                $subidaPorUsuario = 1;
             } else {
-                // SI NO SUBIÓ IMAGEN PERSONALIZADA, USAR LA ORIGINAL O BD
                 if (!empty($prod['imagen_original'])) {
 
                     $img = $prod['imagen_original'];
@@ -118,7 +108,6 @@ class PedidosController extends Controller
                 }
             }
 
-            // GUARDAR DETALLE
             $this->detalleModel->insert([
                 'id_pedido'           => $pedidoId,
                 'id_producto'         => $prod['id'],
@@ -131,16 +120,11 @@ class PedidosController extends Controller
             ]);
         }
 
-        // ENVIAR EMAIL
         $this->enviarEmailConfirmacion($pedidoId);
 
         return redirect()->to('/')->with('msg', 'Pedido enviado correctamente.');
     }
 
-
-    // ===================================================
-    // EMAIL
-    // ===================================================
     protected function enviarEmailConfirmacion($pedidoId)
     {
         $pedido   = $this->pedidoModel->find($pedidoId);
@@ -162,14 +146,12 @@ class PedidosController extends Controller
                 <b>Cantidad:</b> {$d['cantidad']}<br>
                 <b>Precio:</b> $ {$d['precio_unitario']}<br>";
 
-            // SOLO MOSTRAR IMAGEN PERSONALIZADA REAL
             if (!empty($d['detalleImagen']) && !empty($d['imagen_personalizada'])) {
 
                 $filename = basename($d['detalleImagen']);
 
                 $mensaje .= "<b>Imagen adjunta:</b> {$filename}<br>";
 
-                // Adjuntar la imagen real
                 $adjunto = FCPATH . 'public/' . ltrim($d['detalleImagen'], '/');
 
                 if (is_file($adjunto)) {
