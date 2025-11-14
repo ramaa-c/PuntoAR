@@ -121,18 +121,21 @@ document.addEventListener("DOMContentLoaded", () => {
       const card = document.createElement("div");
       card.className = "producto-card";
       card.setAttribute("data-url", `producto/${p.id_producto}`);
+
       card.innerHTML = `
-        <img src="${p.imagen}" alt="${escapeHtml(p.nombre)}">
-        <p class="producto-precio">$${Number(p.precio).toLocaleString()}</p>
-        <p class="producto-nombre">${escapeHtml(p.nombre)}</p>
-        <button class="btn-comprar" data-id="${p.id_producto}" 
-                data-nombre="${escapeHtml(p.nombre)}" 
-                data-precio="${p.precio}" 
-                data-imagen="${p.imagen}"
-                data-producto-tipo="${p.tipo}">
-          Comprar
-        </button>
-      `;
+    <img src="${p.imagen_url}" alt="${escapeHtml(p.nombre)}">
+    <p class="producto-precio">$${Number(p.precio).toLocaleString()}</p>
+    <p class="producto-nombre">${escapeHtml(p.nombre)}</p>
+    <button class="btn-comprar" 
+            data-id="${p.id_producto}" 
+            data-nombre="${escapeHtml(p.nombre)}" 
+            data-precio="${p.precio}" 
+            data-imagen="${p.imagen}" 
+            data-producto-tipo="${p.tipo}">
+      Comprar
+    </button>
+  `;
+
       contenedorProductos.appendChild(card);
     });
   }
@@ -165,7 +168,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const imagen = button.getAttribute("data-imagen");
         const tipo = button.getAttribute("data-producto-tipo");
         if (typeof window.agregarAlCarrito === "function") {
-          window.agregarAlCarrito({ id, nombre, precio, cantidad: 1, imagen, tipo });
+          window.agregarAlCarrito({
+            id,
+            nombre,
+            precio,
+            cantidad: 1,
+            imagen,
+            tipo,
+          });
         } else {
           console.warn("agregarAlCarrito no está definida");
         }

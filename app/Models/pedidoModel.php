@@ -12,7 +12,6 @@ class pedidoModel extends Model
         'id_usuario',
         'fecha',
         'estado',
-        'requiere_contacto',
         'nombre_cliente',
         'email_cliente',
         'telefono_cliente',

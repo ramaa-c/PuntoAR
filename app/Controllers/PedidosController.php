@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\pedidoModel;
 use App\Models\pedidoDetalleModel;
+use App\Models\productoModel;
 use CodeIgniter\Controller;
 
 class PedidosController extends Controller
@@ -19,101 +20,169 @@ class PedidosController extends Controller
         $this->email        = \Config\Services::email();
     }
 
-    public function index()
-    {
-        $data['pedidos'] = $this->pedidoModel->findAll();
-        return view('pedidos/index', $data);
-    }
-
     public function crear()
     {
         $session = session();
 
-        if ($this->request->getMethod() === 'POST') {
-            if ($session->get('logged_in')) {
-                $nombre   = $session->get('nombre');
-                $email    = $session->get('email');
-                $telefono = $session->get('telefono');
-                $idUsuario = $session->get('id_usuario');
-            } else {
-                $nombre   = $this->request->getPost('nombre_cliente');
-                $email    = $this->request->getPost('email_cliente');
-                $telefono = $this->request->getPost('telefono_cliente');
-                $idUsuario = null;
-            }
+        if ($this->request->getMethod() !== 'POST') {
+            return redirect()->to('/')->with('error', 'Acción inválida');
+        }
 
-            if (empty($nombre) || empty($email)) {
-                return redirect()->back()->with('error', 'Debe completar su nombre y correo electrónico para continuar.');
-            }
+        // DATOS DEL CLIENTE
+        if ($session->get('logged_in')) {
+            $nombre    = $session->get('nombre');
+            $email     = $session->get('email');
+            $telefono  = $session->get('telefono');
+            $idUsuario = $session->get('id_usuario');
+        } else {
+            $nombre    = trim($this->request->getPost('nombre_cliente'));
+            $email     = trim($this->request->getPost('email_cliente'));
+            $telefono  = trim($this->request->getPost('telefono_cliente'));
+            $idUsuario = null;
+        }
 
-            $data = [
-                'id_usuario'       => $idUsuario,
-                'nombre_cliente'   => $nombre,
-                'email_cliente'    => $email,
-                'telefono_cliente' => $telefono ?? null,
-                'total'            => $this->request->getPost('total') ?? 0,
-            ];
+        if (empty($nombre) || empty($email)) {
+            return redirect()->back()->with('error', 'Debe completar su nombre y correo electrónico.');
+        }
 
-            $pedidoId = $this->pedidoModel->insert($data);
+        // CREAR PEDIDO
+        $pedidoData = [
+            'id_usuario'       => $idUsuario,
+            'nombre_cliente'   => $nombre,
+            'email_cliente'    => $email,
+            'telefono_cliente' => $telefono ?: null,
+            'total'            => $this->request->getPost('total') ?? 0,
+        ];
 
-            $productos = $this->request->getPost('productos');
-            $archivos  = $this->request->getFiles();
+        $pedidoId = $this->pedidoModel->insert($pedidoData);
 
-            if ($productos && is_array($productos)) {
-                foreach ($productos as $i => $prod) {
-                    $imagenPath = null;
+        // PRODUCTOS DEL FORM
+        $productos = $this->request->getPost('productos');
+        $files     = $this->request->getFiles();
 
-                    if (isset($archivos['productos'][$i]['imagen']) && $archivos['productos'][$i]['imagen']->isValid()) {
-                        $file = $archivos['productos'][$i]['imagen'];
-                        $newName = $file->getRandomName();
-                        $file->move(FCPATH . 'uploads/pedidos', $newName);
-                        $imagenPath = 'uploads/pedidos/' . $newName;
+        if (!$productos || !is_array($productos)) {
+            return redirect()->back()->with('error', 'No se enviaron productos válidos.');
+        }
+
+        $productoModel = new productoModel();
+
+
+        // ===================================================
+        // INSERTAR DETALLES DEL PEDIDO
+        // ===================================================
+        foreach ($productos as $i => $prod) {
+
+            $productoBD = null;
+            $nombreProducto = $prod['nombre'] ?? null;
+            $imagenPrincipal = null;
+
+            // OBTENER INFO DESDE BD SI NO VINO
+            if (empty($nombreProducto) && !empty($prod['id'])) {
+
+                $productoBD = $productoModel->find((int)$prod['id']);
+
+                if ($productoBD) {
+                    $nombreProducto = $productoBD['nombre'];
+
+                    if (empty($prod['imagen_original']) && !empty($productoBD['imagen'])) {
+                        $prod['imagen_original'] = $productoBD['imagen'];
                     }
-
-                    $this->detalleModel->insert([
-                        'id_pedido'       => $pedidoId,
-                        'id_producto'     => $prod['id'],
-                        'cantidad'        => $prod['cantidad'],
-                        'especificaciones' => $prod['especificaciones'] ?? null,
-                        'precio_unitario' => $prod['precio'],
-                        'detalleImagen'   => $imagenPath
-                    ]);
                 }
             }
 
-            $this->enviarEmailConfirmacion($pedidoId);
+            // SUBIR ARCHIVO PERSONALIZADO
+            $subidaPorUsuario = 0;
 
-            return redirect()->to('/')->with('msg', 'Pedido enviado correctamente.');
+            if (
+                isset($files['productos'][$i]['imagen']) &&
+                $files['productos'][$i]['imagen']->isValid() &&
+                !$files['productos'][$i]['imagen']->hasMoved()
+            ) {
+                $file = $files['productos'][$i]['imagen'];
+                $newName = $file->getRandomName();
+
+                $file->move(FCPATH . 'public/uploads/pedidos', $newName);
+
+                $imagenPrincipal = 'uploads/pedidos/' . $newName;
+                $subidaPorUsuario = 1; // <-- IMPORTANTE
+            } else {
+                // SI NO SUBIÓ IMAGEN PERSONALIZADA, USAR LA ORIGINAL O BD
+                if (!empty($prod['imagen_original'])) {
+
+                    $img = $prod['imagen_original'];
+                    $img = str_replace(base_url(), '', $img);
+                    $imagenPrincipal = ltrim($img, '/');
+                } elseif (!empty($productoBD['imagen'])) {
+
+                    $imagenPrincipal = ltrim($productoBD['imagen'], '/');
+                }
+            }
+
+            // GUARDAR DETALLE
+            $this->detalleModel->insert([
+                'id_pedido'           => $pedidoId,
+                'id_producto'         => $prod['id'],
+                'nombre_producto'     => $nombreProducto,
+                'cantidad'            => $prod['cantidad'],
+                'especificaciones'    => $prod['especificaciones'] ?? null,
+                'precio_unitario'     => $prod['precio'],
+                'detalleImagen'       => $imagenPrincipal,
+                'imagen_personalizada' => $subidaPorUsuario,   // <-- NUEVO CAMPO
+            ]);
         }
 
-        return redirect()->to('/')->with('error', 'Acción inválida');
+        // ENVIAR EMAIL
+        $this->enviarEmailConfirmacion($pedidoId);
+
+        return redirect()->to('/')->with('msg', 'Pedido enviado correctamente.');
     }
 
+
+    // ===================================================
+    // EMAIL
+    // ===================================================
     protected function enviarEmailConfirmacion($pedidoId)
     {
         $pedido   = $this->pedidoModel->find($pedidoId);
         $detalles = $this->detalleModel->where('id_pedido', $pedidoId)->findAll();
 
         $mensaje  = "<h2>Nuevo Pedido #{$pedido['id_pedido']}</h2>";
-        $mensaje .= "<p><b>Cliente:</b> {$pedido['nombre_cliente']} ({$pedido['email_cliente']})</p>";
+        $mensaje .= "<p><b>Cliente:</b> " . esc($pedido['nombre_cliente']) . " (" . esc($pedido['email_cliente']) . ")</p>";
         $mensaje .= "<p><b>Total:</b> $ {$pedido['total']}</p>";
-        $mensaje .= "<p><b>Estado:</b> {$pedido['estado']}</p>";
-        $mensaje .= "<h3>Detalles:</h3>";
-        $mensaje .= "<ul>";
+        $mensaje .= "<h3>Detalles:</h3><ul>";
 
         foreach ($detalles as $d) {
-            $mensaje .= "<li>Producto ID {$d['id_producto']} - Cant: {$d['cantidad']} - $ {$d['precio_unitario']}";
-            if (!empty($d['especificaciones'])) {
-                $mensaje .= "<br><b>Especificaciones:</b> {$d['especificaciones']}";
+
+            $nombreProd = !empty($d['nombre_producto'])
+                ? esc($d['nombre_producto'])
+                : ('Producto #' . esc($d['id_producto']));
+
+            $mensaje .= "<li>
+                <b>Producto:</b> {$nombreProd}<br>
+                <b>Cantidad:</b> {$d['cantidad']}<br>
+                <b>Precio:</b> $ {$d['precio_unitario']}<br>";
+
+            // SOLO MOSTRAR IMAGEN PERSONALIZADA REAL
+            if (!empty($d['detalleImagen']) && !empty($d['imagen_personalizada'])) {
+
+                $filename = basename($d['detalleImagen']);
+
+                $mensaje .= "<b>Imagen adjunta:</b> {$filename}<br>";
+
+                // Adjuntar la imagen real
+                $adjunto = FCPATH . 'public/' . ltrim($d['detalleImagen'], '/');
+
+                if (is_file($adjunto)) {
+                    $this->email->attach($adjunto);
+                }
             }
-            if (!empty($d['detalleImagen'])) {
-                $mensaje .= "<br><img src='" . base_url($d['detalleImagen']) . "' width='120'>";
-            }
+
             $mensaje .= "</li><br>";
         }
+
         $mensaje .= "</ul>";
 
-        $this->email->setTo('raramiro.240@gmail.com');
+        $this->email->setTo('puntoar.contact@gmail.com');
         $this->email->setFrom('no-reply@puntoar.com', 'Sistema PuntoAR');
         $this->email->setSubject("Nuevo pedido recibido #{$pedido['id_pedido']}");
         $this->email->setMailType('html');
@@ -123,7 +192,6 @@ class PedidosController extends Controller
 
     public function enviarPedido()
     {
-
         $productos = $this->request->getPost('productos');
 
         if (!$productos || !is_array($productos)) {

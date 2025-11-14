@@ -100,9 +100,15 @@ class ProductoController extends BaseController
 
         foreach ($productos as &$p) {
             if (!empty($p['imagen'])) {
-                $p['imagen'] = base_url('public/' . $p['imagen']);
+
+                $rutaOriginal = ltrim($p['imagen'], '/');
+
+                $p['imagen_url'] = base_url('public/' . $rutaOriginal);
+
+                $p['imagen'] = $rutaOriginal;
             } else {
-                $p['imagen'] = base_url('public/images/placeholder.png');
+                $p['imagen'] = 'images/placeholder.png';
+                $p['imagen_url'] = base_url('public/images/placeholder.png');
             }
         }
 
@@ -111,8 +117,6 @@ class ProductoController extends BaseController
         $this->response->setHeader('X-Total-Count', (string) $total);
         return $this->response->setJSON($productos);
     }
-
-
 
     public function ver(?int $id = null)
     {

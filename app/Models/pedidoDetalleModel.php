@@ -14,7 +14,9 @@ class PedidoDetalleModel extends Model
         'cantidad',
         'especificaciones',
         'precio_unitario',
-        'detalleImagen'
+        'detalleImagen',
+        'nombre_producto',
+        'imagen_personalizada'
     ];
     protected $useTimestamps    = false;
 }

@@ -1,5 +1,7 @@
 <?= view('layout/header', ['titulo' => 'Iniciar Sesión - PuntoAR', 'estilos' => ['login.css']]) ?>
 <?= view('layout/navbar') ?>
+<?= view('layout/sidebar') ?>
+
 <div class="main_login">
 <div class="login_container">
     <h1 class="login_titulo">Registro de Usuario</h1>
