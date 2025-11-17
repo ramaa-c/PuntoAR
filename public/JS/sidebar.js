@@ -1,6 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
   let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
+  window.addEventListener("carritoActualizado", (evt) => {
+    carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    if (typeof renderCarrito === "function") {
+      renderCarrito();
+    }
+    const customEvent = new CustomEvent("carritoSincronizado", {
+      detail: {
+        total: carrito.reduce((acc, it) => acc + (it.cantidad || 0), 0),
+      },
+    });
+    window.dispatchEvent(customEvent);
+  });
+
   function guardarCarrito() {
     localStorage.setItem("carrito", JSON.stringify(carrito));
 
@@ -69,9 +82,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     </div>
                     <div class="item-actions">
                         <a href="#" onclick="eliminarProducto(event, ${index})" class="eliminar-btn">Eliminar</a>
-                        <p class="item-price">$${(
-                          item.precio * item.cantidad
-                        ).toFixed(2)}</p>
+                        <p class="item-price">
+                            ${
+                              item.precio && item.precio > 0
+                                ? "$" + (item.precio * item.cantidad).toFixed(2)
+                                : "<span class='sin-precio'>A cotizar</span>"
+                            }
+                        </p>
                     </div>
                 </div>
                 <hr class="subtotal-separator">
@@ -165,12 +182,24 @@ function iniciarCotizacion() {
 
   carrito.forEach((item, index) => {
     form.innerHTML += `
-            <input type="hidden" name="productos[${index}][imagen]" value="${item.imagen}">
-            <input type="hidden" name="productos[${index}][id]" value="${item.id}">
-            <input type="hidden" name="productos[${index}][nombre]" value="${item.nombre}">
-            <input type="hidden" name="productos[${index}][cantidad]" value="${item.cantidad}">
-            <input type="hidden" name="productos[${index}][precio]" value="${item.precio}">
-            <input type="hidden" name="productos[${index}][tipo]" value="${item.tipo || ''}">
+            <input type="hidden" name="productos[${index}][imagen]" value="${
+      item.imagen
+    }">
+            <input type="hidden" name="productos[${index}][id]" value="${
+      item.id
+    }">
+            <input type="hidden" name="productos[${index}][nombre]" value="${
+      item.nombre
+    }">
+            <input type="hidden" name="productos[${index}][cantidad]" value="${
+      item.cantidad
+    }">
+            <input type="hidden" name="productos[${index}][precio]" value="${
+      item.precio ?? ""
+    }">
+            <input type="hidden" name="productos[${index}][tipo]" value="${
+      item.tipo || ""
+    }">
         `;
   });
 

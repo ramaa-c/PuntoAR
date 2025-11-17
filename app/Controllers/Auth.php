@@ -5,15 +5,17 @@ namespace App\Controllers;
 use App\Models\usuarioModel;
 use CodeIgniter\Session\Session;
 
-class Auth extends BaseController{
+class Auth extends BaseController
+{
 
-    public function index(){
+    public function index()
+    {
 
         return redirect()->to('/login');
-
     }
 
-    public function perfil(){
+    public function perfil()
+    {
         $session = session();
         $usuarioModel = new usuarioModel();
 
@@ -23,10 +25,11 @@ class Auth extends BaseController{
     }
 
 
-    public function login(){
+    public function login()
+    {
         $usuarioModel = new usuarioModel();
         $session = session();
-        
+
         if ($this->request->getMethod() === 'POST') {
             $postData = $this->request->getPost();
 
@@ -41,9 +44,14 @@ class Auth extends BaseController{
 
             $session->set([
                 'email'     => $usuario['email'],
-                'id_usuario'=> $usuario['id_usuario'],
+                'id_usuario' => $usuario['id_usuario'],
+                'rol'       => $usuario['rol'],
                 'logged_in' => true
             ]);
+
+            if ($usuario['rol'] === 'admin') {
+                return redirect()->to('/admin')->with('success', 'Bienvenido Administrador');
+            }
 
             return redirect()->to('/')->with('success', 'Sesión iniciada correctamente');
         }
@@ -51,7 +59,8 @@ class Auth extends BaseController{
         return view('auth/login');
     }
 
-    public function crearUsuario(){
+    public function crearUsuario()
+    {
         $usuarioModel = new usuarioModel();
         $session = session();
 
@@ -64,28 +73,31 @@ class Auth extends BaseController{
                 return redirect()->back()->withInput()->with('errors', $usuarioModel->errors());
             }
             unset($postData['confirmClave']);
+            $postData['rol'] = 'cliente';
             $idInsertado = $usuarioModel->insertUsuario($postData);
+
 
             if (!$idInsertado) {
                 return redirect()->back()->withInput()->with('errors', $usuarioModel->errors());
-            }         
+            }
 
             $usuario = $usuarioModel->obtenerUsuarioPorId($idInsertado);
 
             $session->set([
                 'email'     => $usuario['email'],
-                'id_usuario'=> $usuario['id_usuario'],
+                'id_usuario' => $usuario['id_usuario'],
+                'rol'       => $usuario['rol'],
                 'logged_in' => true
             ]);
 
-            return redirect()->to('/')->with('success', 'Usuario creado con éxito.');     
-
+            return redirect()->to('/')->with('success', 'Usuario creado con éxito.');
         }
 
         return view('auth/registro');
     }
 
-    public function editarUsuario(){
+    public function editarUsuario()
+    {
         $usuarioModel = new UsuarioModel();
         $session = session();
 
@@ -143,7 +155,8 @@ class Auth extends BaseController{
         return view('auth/editarPerfil', ['usuario' => $usuario]);
     }
 
-    public function logout(){
+    public function logout()
+    {
         session()->destroy();
         return redirect()->to('/login');
     }

@@ -49,20 +49,24 @@
         <div id="productos-listado">
             <?php foreach ($productos as $producto): ?>
                 <?php
-                    $imagenUrl = !empty($producto['imagen_url'])
-                        ? $producto['imagen_url']
-                        : base_url('public/' . ($producto['imagen'] ?? 'images/placeholder.png'));
+                $imagenUrl = !empty($producto['imagen_url'])
+                    ? $producto['imagen_url']
+                    : base_url('public/' . ($producto['imagen'] ?? 'images/placeholder.png'));
                 ?>
                 <div class="producto-card"
                     data-url="<?= site_url('producto/' . $producto['id_producto']) ?>">
                     <img src="<?= esc($imagenUrl) ?>"
                         alt="<?= esc($producto['nombre']) ?>">
-                    <p class="producto-precio">$<?= number_format($producto['precio'], 0) ?></p>
+                    <p class="producto-precio">
+                        <?= ($producto['precio'] && $producto['precio'] > 0)
+                            ? '$' . number_format($producto['precio'], 0)
+                            : '<span class="sin-precio">Cotizable</span>' ?>
+                    </p>
                     <p class="producto-nombre"><?= esc($producto['nombre']) ?></p>
                     <button class="btn-comprar"
                         data-id="<?= $producto['id_producto'] ?>"
                         data-nombre="<?= esc($producto['nombre']) ?>"
-                        data-precio="<?= $producto['precio'] ?>"
+                        data-precio="<?= $producto['precio'] ?? '' ?>"
                         data-imagen="<?= esc($producto['imagen']) ?>"
                         data-producto-tipo="<?= esc($producto['tipo']) ?>">
                         Comprar

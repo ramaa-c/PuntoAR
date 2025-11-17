@@ -28,7 +28,7 @@
 
                         <div class="form-group">
                             <label for="descripcion">Descripción</label>
-                            <textarea class="form-control" id="descripcion" name="descripcion" rows="4" placeholder="Descripción detallada del producto..." required><?= set_value('descripcion', $producto['descripcion']) ?></textarea>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="4" placeholder="Descripción detallada del producto..."><?= set_value('descripcion', $producto['descripcion'] ?? '') ?></textarea>
                         </div>
 
                         <div class="row">
@@ -56,12 +56,12 @@
 
                             <div class="form-group col-md-4">
                                 <label for="precio">Precio ($)</label>
-                                <input type="number" step="0.01" min="0" class="form-control" id="precio" name="precio" placeholder="0.00" required value="<?= set_value('precio', $producto['precio']) ?>">
+                                <input type="number" step="0.01" min="0" class="form-control" id="precio" name="precio" placeholder="0.00" value="<?= set_value('precio', $producto['precio'] ?? '') ?>">
                             </div>
 
                             <div class="form-group col-md-4">
                                 <label for="stock">Stock Inicial</label>
-                                <input type="number" min="0" class="form-control" id="stock" name="stock" placeholder="0" required value="<?= set_value('stock', $producto['stock']) ?>">
+                                <input type="number" min="0" class="form-control" id="stock" name="stock" placeholder="0" value="<?= set_value('stock', $producto['stock'] ?? '') ?>">
                             </div>
                         </div>
 

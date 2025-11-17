@@ -26,8 +26,8 @@ class productoModel extends Model
     protected $validationRules = [
         'nombre'      => 'required|min_length[3]|max_length[150]',
         'descripcion' => 'permit_empty|string',
-        'precio'      => 'required|decimal',
-        'stock'       => 'required|is_natural',
+        'precio'      => 'permit_empty|decimal',
+        'stock'       => 'permit_empty|is_natural',
         'id_categoria' => 'permit_empty|integer',
         'imagen'      => 'permit_empty|string',
         'tipo'        => 'in_list[estandar,personalizable]',
@@ -41,11 +41,9 @@ class productoModel extends Model
             'max_length'  => 'El nombre no puede superar los 150 caracteres.'
         ],
         'precio' => [
-            'required' => 'El precio es obligatorio.',
             'decimal'  => 'El precio debe ser un número decimal válido.'
         ],
         'stock' => [
-            'required'    => 'El stock es obligatorio.',
             'is_natural'  => 'El stock debe ser un número natural (0 o mayor).'
         ],
         'imagen' => [

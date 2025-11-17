@@ -35,6 +35,7 @@ body {
 .form-group {
     margin-bottom: 8px;
     text-align: left;
+    position: relative;
 }
 .label_login {
     display: block;
@@ -93,4 +94,22 @@ body {
 .success-message {
     color: #2ecc71;
     margin-bottom: 20px;
+}
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 14px;
+    color: #111111;
+    z-index: 10;
+    margin-top: 15px;
+}
+
+.toggle-password:hover {
+    color: #000000;
 }

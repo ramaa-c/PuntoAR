@@ -116,13 +116,17 @@ class PedidosController extends Controller
                 'especificaciones'    => $prod['especificaciones'] ?? null,
                 'precio_unitario'     => $prod['precio'],
                 'detalleImagen'       => $imagenPrincipal,
-                'imagen_personalizada' => $subidaPorUsuario,   // <-- NUEVO CAMPO
+                'imagen_personalizada' => $subidaPorUsuario,
             ]);
         }
 
         $this->enviarEmailConfirmacion($pedidoId);
 
-        return redirect()->to('/')->with('msg', 'Pedido enviado correctamente.');
+        session()->remove('carrito');
+
+        return redirect()
+            ->to('/')
+            ->with('success', '✅ Pedido realizado con éxito');
     }
 
     protected function enviarEmailConfirmacion($pedidoId)
@@ -181,8 +185,16 @@ class PedidosController extends Controller
         }
 
         $total = 0;
+
         foreach ($productos as &$p) {
-            $total += $p['precio'] * $p['cantidad'];
+            $precio   = is_numeric($p['precio']) ? floatval($p['precio']) : 0;
+            $cantidad = is_numeric($p['cantidad']) ? intval($p['cantidad']) : 0;
+
+            $p['subtotal'] = $precio > 0 ? $precio * $cantidad : null;
+
+            if ($p['subtotal'] !== null) {
+                $total += $p['subtotal'];
+            }
         }
 
         return view('pedidos/enviarPedido', [

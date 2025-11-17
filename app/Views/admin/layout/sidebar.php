@@ -68,12 +68,12 @@
                     </a>
                 </li>
 
-                <li class="nav-header">NEGOCIO</li>
+                <li class="nav-header">CUENTA</li>
 
                 <li class="nav-item">
-                    <a href="<?= base_url('admin/ordenes') ?>" class="nav-link">
-                        <i class="nav-icon bi bi-cart-fill"></i>
-                        <p>Órdenes de Venta</p>
+                    <a href="<?= base_url('logout') ?>" class="nav-link" onclick="return confirm('¿Cerrar sesión?')">
+                        <i class="nav-icon bi bi-box-arrow-right"></i>
+                        <p class="text-danger fw-bold">Cerrar Sesión</p>
                     </a>
                 </li>
 

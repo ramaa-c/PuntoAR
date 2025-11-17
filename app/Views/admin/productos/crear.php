@@ -33,8 +33,8 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="descripcion">Descripción</label>
-                            <textarea class="form-control" id="descripcion" name="descripcion" rows="4" placeholder="Descripción detallada del producto..." required></textarea>
+                            <label for="descripcion">Descripción<small class="text-muted">(opcional)</small></label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="4" placeholder="Descripción detallada del producto..."></textarea>
                         </div>
 
                         <div class="row">
@@ -68,13 +68,13 @@
                             </div>
 
                             <div class="form-group col-md-4">
-                                <label for="precio">Precio ($)</label>
-                                <input type="number" step="0.01" min="0" class="form-control" id="precio" name="precio" placeholder="0.00" required>
+                                <label for="precio">Precio ($)<small class="text-muted">(opcional)</small></label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="precio" name="precio" placeholder="0.00">
                             </div>
 
                             <div class="form-group col-md-4">
-                                <label for="stock">Stock Inicial</label>
-                                <input type="number" min="0" class="form-control" id="stock" name="stock" placeholder="0" required>
+                                <label for="stock">Stock Inicial<small class="text-muted">(opcional)</small></label>
+                                <input type="number" min="0" class="form-control" id="stock" name="stock" placeholder="0">
                             </div>
 
                         </div>

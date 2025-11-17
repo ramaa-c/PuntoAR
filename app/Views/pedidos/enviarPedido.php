@@ -2,11 +2,11 @@
 <?= view('layout/navbar') ?>
 
 <div class="pedido-container">
-    <h1>Confirmar Pedido</h1>
 
     <div class="pedido-content-wrapper">
 
         <div class="pedido-left-panel">
+            <h1>Confirmar Pedido</h1>
             <form action="<?= base_url('/pedidos/crear') ?>" method="post" enctype="multipart/form-data">
                 <?= csrf_field() ?>
 
@@ -72,9 +72,21 @@
 
                                     <td><?= esc($p['cantidad']) ?></td>
 
-                                    <td>$<?= number_format($p['precio'], 2, ',', '.') ?></td>
+                                    <td>
+                                        <?php if (!empty($p['precio'])): ?>
+                                            $<?= number_format($p['precio'], 2, ',', '.') ?>
+                                        <?php else: ?>
+                                            <span style="color:#777;">—</span>
+                                        <?php endif; ?>
+                                    </td>
 
-                                    <td>$<?= number_format($p['precio'] * $p['cantidad'], 2, ',', '.') ?></td>
+                                    <td>
+                                        <?php if (!empty($p['precio'])): ?>
+                                            $<?= number_format($p['precio'] * $p['cantidad'], 2, ',', '.') ?>
+                                        <?php else: ?>
+                                            <span style="color:#777;">—</span>
+                                        <?php endif; ?>
+                                    </td>
 
                                     <td>
                                         <textarea
@@ -130,7 +142,14 @@
                 </div>
 
                 <div class="pedido-footer-actions">
-                    <p class="pedido-total"><b>Total: $<?= number_format($total, 2, ',', '.') ?></b></p>
+                    <p class="pedido-total"><b>
+                            Total:
+                            <?php if (!empty($total)): ?>
+                                $<?= number_format($total, 2, ',', '.') ?>
+                            <?php else: ?>
+                                <span style="color:#777;">—</span>
+                            <?php endif; ?>
+                        </b></p>
                     <input type="hidden" name="total" value="<?= $total ?>">
                     <button type="submit" class="main-action-btn-pedido">Enviar Pedido</button>
                 </div>

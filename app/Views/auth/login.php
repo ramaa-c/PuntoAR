@@ -5,11 +5,11 @@
 <div class="main_login">
     <div class="login_container">
         <h1 class="login_titulo">Iniciar Sesión</h1>
-        
+
         <?php if (session()->getFlashdata('success')): ?>
             <p class="success-message"><?= session()->getFlashdata('success') ?></p>
         <?php endif; ?>
-        
+
         <?php if (isset($errors)): ?>
             <div style="color:#e74c3c; margin-bottom:20px;">
                 <?php foreach ($errors as $error): ?>
@@ -17,7 +17,7 @@
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
-        
+
         <form action="<?= site_url('/login') ?>" method="post">
             <div class="form-group">
                 <label class="label_login">Email</label>
@@ -26,15 +26,16 @@
                     <small class="error-message"><?= esc(session('errors.email')) ?></small>
                 <?php endif; ?>
             </div>
-            
+
             <div class="form-group">
                 <label class="label_login">Contraseña</label>
-                <input class="input_login" type="password" name="clave" required>
+                <input class="input_login" type="password" name="clave" id="clave" required>
+                <button type="button" class="toggle-password" id="togglePassword"><i class="fa-solid fa-eye-slash"></i></button>
                 <?php if (session('errors.clave')): ?>
                     <small class="error-message"><?= esc(session('errors.clave')) ?></small>
                 <?php endif; ?>
             </div>
-            
+
             <button type="submit" class="submit-btn"><b>Ingresar</b></button>
         </form>
         <br>
@@ -43,5 +44,22 @@
         </div>
     </div>
 </div>
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function (e) {
+        const passwordInput = document.getElementById('clave');
+        const icon = this.querySelector('i');
+        
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        if (type === 'text') {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        } else {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        }
+    });
+</script>
 
 <?= view('layout/footer') ?>

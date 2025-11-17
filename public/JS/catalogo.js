@@ -123,18 +123,27 @@ document.addEventListener("DOMContentLoaded", () => {
       card.setAttribute("data-url", `producto/${p.id_producto}`);
 
       card.innerHTML = `
-    <img src="${p.imagen_url}" alt="${escapeHtml(p.nombre)}">
-    <p class="producto-precio">$${Number(p.precio).toLocaleString()}</p>
-    <p class="producto-nombre">${escapeHtml(p.nombre)}</p>
-    <button class="btn-comprar" 
-            data-id="${p.id_producto}" 
-            data-nombre="${escapeHtml(p.nombre)}" 
-            data-precio="${p.precio}" 
-            data-imagen="${p.imagen}" 
-            data-producto-tipo="${p.tipo}">
-      Comprar
-    </button>
-  `;
+  <img src="${p.imagen_url}" alt="${escapeHtml(p.nombre)}">
+
+  <p class="producto-precio">
+    ${
+      p.precio && Number(p.precio) > 0
+        ? "$" + Number(p.precio).toLocaleString()
+        : "<span class='sin-precio'>A cotizar</span>"
+    }
+  </p>
+
+  <p class="producto-nombre">${escapeHtml(p.nombre)}</p>
+
+  <button class="btn-comprar" 
+      data-id="${p.id_producto}" 
+      data-nombre="${escapeHtml(p.nombre)}" 
+      data-precio="${p.precio ?? ""}" 
+      data-imagen="${p.imagen}" 
+      data-producto-tipo="${p.tipo}">
+    Comprar
+  </button>
+`;
 
       contenedorProductos.appendChild(card);
     });
@@ -164,7 +173,9 @@ document.addEventListener("DOMContentLoaded", () => {
         e.stopPropagation();
         const id = button.getAttribute("data-id");
         const nombre = button.getAttribute("data-nombre");
-        const precio = parseFloat(button.getAttribute("data-precio"));
+        const precioRaw = button.getAttribute("data-precio");
+        const precio =
+          precioRaw && !isNaN(precioRaw) ? parseFloat(precioRaw) : null;
         const imagen = button.getAttribute("data-imagen");
         const tipo = button.getAttribute("data-producto-tipo");
         if (typeof window.agregarAlCarrito === "function") {

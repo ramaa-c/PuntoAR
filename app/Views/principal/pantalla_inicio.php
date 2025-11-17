@@ -3,6 +3,16 @@
 <?= view('layout/sidebar') ?>
 
 <div class="contenedor_principal">
+    <?php if (session()->getFlashdata('success')): ?>
+        <div class="mensaje-exito">
+            <?= session()->getFlashdata('success') ?>
+        </div>
+        <script>
+            setTimeout(() => {
+                document.querySelector('.mensaje-exito')?.remove();
+            }, 3500);
+        </script>
+    <?php endif; ?>
     <div id="overlay" class="overlay"></div>
 
     <!-- ===== CONTENIDO PRINCIPAL ===== -->
@@ -135,6 +145,23 @@
                     }
                 });
             });
+
+            const alertSuccess = document.querySelector('.mensaje-exito');
+            if (alertSuccess) {
+                localStorage.setItem('carrito', JSON.stringify([]));
+
+                const ev = new CustomEvent('carritoActualizado', {
+                    detail: {
+                        total: 0
+                    }
+                });
+                document.dispatchEvent(ev);
+                window.dispatchEvent(ev);
+
+                window.dispatchEvent(new CustomEvent('carritoVaciado'));
+
+                console.log('Carrito vaciado tras pedido exitoso.');
+            }
 
             // ===== BOTONES COMPRAR ===== //
             const buyButtons = document.querySelectorAll(".buy-button");

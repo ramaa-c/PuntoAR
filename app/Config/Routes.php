@@ -28,8 +28,8 @@ $routes->match(['get', 'post'], '/pedidos/crear', 'PedidosController::crear');
 $routes->get('/pedidos', 'PedidosController::index');
 $routes->match(['get', 'post'], '/pedidos/enviar', 'PedidosController::enviarPedido');
 
-$routes->group('admin', function ($routes) {
-
+$routes->group('admin', ['filter' => 'admin'], function ($routes) {
+    
     $routes->get('/', 'Admin::index');
 
     $routes->get('productos', 'Admin::productos');

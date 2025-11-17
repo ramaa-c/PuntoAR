@@ -55,8 +55,8 @@ class Admin extends BaseController
 		$rules = [
 			'nombre'           => 'required|min_length[3]|max_length[150]',
 			'descripcion'      => 'permit_empty|string',
-			'precio'           => 'required|decimal|greater_than[0]',
-			'stock'            => 'required|integer|greater_than_equal_to[0]',
+			'precio'           => 'permit_empty|decimal|greater_than_equal_to[0]',
+			'stock'            => 'permit_empty|integer|greater_than_equal_to[0]',
 			'id_categoria'     => 'required|integer',
 			'imagen_principal' => 'uploaded[imagen_principal]|max_size[imagen_principal,2048]|ext_in[imagen_principal,jpg,jpeg,png]',
 			'tipo'             => 'required|in_list[estandar,personalizable]',
@@ -99,9 +99,9 @@ class Admin extends BaseController
 
 		$datosProducto = [
 			'nombre'        => $this->request->getPost('nombre'),
-			'descripcion'   => $this->request->getPost('descripcion'),
-			'precio'        => $this->request->getPost('precio'),
-			'stock'         => $this->request->getPost('stock'),
+			'descripcion'   => $this->request->getPost('descripcion') ?: null,
+			'precio' 		=> $this->request->getPost('precio') ?: null,
+			'stock'         => $this->request->getPost('stock') ?: null,
 			'id_categoria'  => $this->request->getPost('id_categoria'),
 			'imagen'        => $imagenesSubidas[0]['ruta'] ?? null,
 			'tipo'          => $this->request->getPost('tipo'),
@@ -181,8 +181,8 @@ class Admin extends BaseController
 		$rules = [
 			'nombre'           => 'required|min_length[3]|max_length[150]',
 			'descripcion'      => 'permit_empty|string',
-			'precio'           => 'required|decimal|greater_than[0]',
-			'stock'            => 'required|integer|greater_than_equal_to[0]',
+			'precio' 		   => 'permit_empty|decimal|greater_than_equal_to[0]',
+			'stock'            => 'permit_empty|integer|greater_than_equal_to[0]',
 			'id_categoria'     => 'required|integer',
 			'tipo'             => 'required|in_list[estandar,personalizable]',
 			'imagen_principal' => 'if_exist|max_size[imagen_principal,2048]|ext_in[imagen_principal,jpg,jpeg,png]',
@@ -296,9 +296,9 @@ class Admin extends BaseController
 
 		$datosProducto = [
 			'nombre'        => $this->request->getPost('nombre'),
-			'descripcion'   => $this->request->getPost('descripcion'),
-			'precio'        => $this->request->getPost('precio'),
-			'stock'         => $this->request->getPost('stock'),
+			'descripcion'   => $this->request->getPost('descripcion') ?: null,
+			'precio'        => $this->request->getPost('precio') ?: null,
+			'stock'         => $this->request->getPost('stock') ?: null,
 			'id_categoria'  => $this->request->getPost('id_categoria'),
 			'tipo'          => $this->request->getPost('tipo'),
 			'imagen'        => $rutaNuevaPrincipal,
@@ -314,29 +314,6 @@ class Admin extends BaseController
 		}
 
 		return redirect()->to(base_url('admin/productos'))->with('success', 'Producto actualizado exitosamente.');
-	}
-
-	public function eliminarImagenGaleria($id_imagen = null)
-	{
-		if (!$this->request->isAJAX() || $id_imagen === null) {
-			return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Solicitud no válida.']);
-		}
-
-		$productoImagenModel = new ProductoImagenModel();
-		$imagen = $productoImagenModel->find($id_imagen);
-
-		if (empty($imagen)) {
-			return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Imagen no encontrada.']);
-		}
-
-		$rutaCompleta = ROOTPATH . 'public/' . $imagen['ruta_imagen'];
-		if (file_exists($rutaCompleta)) {
-			unlink($rutaCompleta);
-		}
-
-		$productoImagenModel->delete($id_imagen);
-
-		return $this->response->setJSON(['success' => true, 'message' => 'Imagen eliminada.']);
 	}
 
 	public function eliminarProducto($id_producto = null)
@@ -399,6 +376,29 @@ class Admin extends BaseController
 			}
 			return redirect()->to(base_url('admin/productos'))->with('error', 'Error al eliminar el producto.');
 		}
+	}
+
+	public function eliminarImagenGaleria($id_imagen = null)
+	{
+		if (!$this->request->isAJAX() || $id_imagen === null) {
+			return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Solicitud no válida.']);
+		}
+
+		$productoImagenModel = new ProductoImagenModel();
+		$imagen = $productoImagenModel->find($id_imagen);
+
+		if (empty($imagen)) {
+			return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Imagen no encontrada.']);
+		}
+
+		$rutaCompleta = ROOTPATH . 'public/' . $imagen['ruta_imagen'];
+		if (file_exists($rutaCompleta)) {
+			unlink($rutaCompleta);
+		}
+
+		$productoImagenModel->delete($id_imagen);
+
+		return $this->response->setJSON(['success' => true, 'message' => 'Imagen eliminada.']);
 	}
 
 	public function categorias()

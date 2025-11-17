@@ -15,7 +15,8 @@ class usuarioModel extends Model{
     protected $allowedFields = ['nombre',
                                 'email',
                                 'clave',
-                                'telefono' ];
+                                'telefono',
+                                'rol' ];
     
     protected $validationRules = [
         'nombre'         => 'required|regex_match[/^[A-Za-zÀ-ÿ\s\.,\'-]+$/]',
@@ -90,7 +91,7 @@ class usuarioModel extends Model{
         if (!$data) {
             return null;
         }
-
+        
         if (password_verify($clave, $data['clave'])) {
             return $data;
         }

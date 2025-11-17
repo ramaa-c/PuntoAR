@@ -2,6 +2,7 @@
     padding: 20px;
     max-width: 1400px;
     margin: 0 auto;
+    margin-top: 150px;
 }
 
 .pedido-content-wrapper {
@@ -17,6 +18,10 @@
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.pedido-left-panel h1{
+    margin-bottom: 20px;
 }
 
 .pedido-info-panel {
@@ -169,15 +174,8 @@
     justify-content: space-around;
 }
 
-/* =======================================================
-   NUEVOS ESTILOS PARA EL FORMULARIO DEL CLIENTE (parte superior)
-   ======================================================= */
-
 .cliente-form-wrapper {
-    /* Define un margen debajo para separarlo de la tabla */
     margin-bottom: 25px;
-    margin-top: 120px;
-    /* Estilos de tarjeta base */
     background-color: #f8f8f8;
     padding: 20px;
     border-radius: 8px;
@@ -189,24 +187,23 @@
     margin-top: 0;
     margin-bottom: 15px;
     color: #333;
-    border-bottom: 2px solid #c1ff72; /* Color de acento */
+    border-bottom: 2px solid #c1ff72;
     padding-bottom: 5px;
+    width: max-content;
+    align-self: self-end;
 }
 
 .cliente-form {
-    /* Usamos Flexbox para ordenar los campos horizontalmente */
     display: flex;
-    gap: 20px; /* Espacio entre los campos */
-    align-items: flex-end; /* Alinea los inputs en la base */
-    flex-wrap: wrap; /* Permite que los campos se envuelvan en pantallas pequeñas */
+    gap: 20px;
+    align-items: center;
 }
 
 .form-group {
-    /* Asegura que cada grupo de label/input ocupe el espacio necesario */
     display: flex;
     flex-direction: column;
-    flex: 1; /* Permite que los grupos de formulario crezcan y se repartan el espacio */
-    min-width: 200px; /* Ancho mínimo para cada campo */
+    flex: 1;
+    min-width: 200px;
 }
 
 .cliente-form label {
@@ -221,7 +218,7 @@
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    box-sizing: border-box; /* Asegura que el padding no cambie el ancho total */
+    box-sizing: border-box;
     width: 100%;
     transition: border-color 0.3s;
 }
@@ -231,24 +228,3 @@
     outline: none;
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
-
-/* =======================================================
-   Ajustes al layout principal (si es necesario)
-   ======================================================= */
-
-/* Si el form del cliente ya no está en pedido-left-panel,
-   el flujo de la página se ajusta, solo necesitas asegurar
-   que pedido-container y sus hijos se vean bien. */
-   
-.pedido-container {
-    max-width: 1200px; /* O el ancho que uses */
-    margin: 0 auto;
-    padding: 20px;
-}
-
-/* Asegura que los dos paneles (tabla y info) sigan en línea */
-.pedido-content-wrapper {
-    display: flex;
-    gap: 20px;
-}
-/* ... otros estilos de la tabla/paneles existentes ... */
