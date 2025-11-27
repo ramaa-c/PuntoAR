@@ -51,6 +51,10 @@ $userEmail = $session->get('email');
     </div>
   </nav>
 </header>
+<div id="toast-container"
+  style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+</div>
+
 <script>
   document.addEventListener('DOMContentLoaded', () => {
 
@@ -117,4 +121,27 @@ $userEmail = $session->get('email');
       });
 
   });
+
+  function mostrarToast(mensaje) {
+    const cont = document.getElementById('toast-container');
+
+    const toast = document.createElement('div');
+    toast.textContent = mensaje;
+    toast.style.background = '#333';
+    toast.style.color = '#fff';
+    toast.style.padding = '12px 18px';
+    toast.style.marginTop = '8px';
+    toast.style.borderRadius = '8px';
+    toast.style.fontSize = '14px';
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s ease';
+
+    cont.appendChild(toast);
+
+    setTimeout(() => (toast.style.opacity = '1'), 50);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 300);
+    }, 2500);
+  }
 </script>

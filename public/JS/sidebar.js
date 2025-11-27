@@ -107,6 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     guardarCarrito();
+    mostrarToast("Producto añadido al carrito");
     if (typeof renderCarrito === "function") renderCarrito();
   };
 

@@ -160,7 +160,6 @@
 
                 window.dispatchEvent(new CustomEvent('carritoVaciado'));
 
-                console.log('Carrito vaciado tras pedido exitoso.');
             }
 
             // ===== BOTONES COMPRAR ===== //
